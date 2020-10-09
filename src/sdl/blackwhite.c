@@ -74,14 +74,57 @@ void wait_for_keypressed()
 
 void SDL_FreeSurface(SDL_Surface *surface);
 
-int main()
+
+void greyscale(SDL_Surface *img)
 {
-    SDL_Surface* image_surface;
+    Uint32 pixel;
+    Uint8 r, g, b, Lum;
+    for (int i = 0; i < img->w; ++i)
+    {
+        for (int j = 0; j < img->h; ++j)
+        {
+            pixel = get_pixel(img, i, j);
+            SDL_GetRGB(pixel, img->format, &r, &g, &b);
+            Lum = (r + g + b) / 3;
+            put_pixel(img, i, j, SDL_MapRGB(img->format, Lum, Lum, Lum));
+        }
+    }
+}
+
+/*
+void blackandwhite(SDL_Surface *img)
+{
+    Uint32 pixel;
+    Uint8 r, g, b, Lum;
+    for (int i = 0; i < img->w; ++i)
+    {
+        for (int j = 0; j < img->h; ++j)
+        {
+            pixel = getpixel(img, i, j);
+            SDL_GetRGB(pixel, img->format, &r, &g, &b);
+            Lum = (r + g + b) / 3;
+
+		    if (luminosity > 170)
+			    luminosity = 255;
+		    else
+			    luminosity = 0;
+
+            putpixel(img, i, j, SDL_MapRGB(img->format, Lum, Lum, Lum));
+        }
+    }
+}
+*/
+int main(int argc, char *argv[])
+{
+	if (argc < 2)
+		errx(0, "A file has to be specified.");
+
+	SDL_Surface* image_surface;
     SDL_Surface* screen_surface;
 
     init_sdl();
 
-    image_surface = load_image("bd1.jpg");
+    image_surface = load_image(argv[1]);
     screen_surface = display_image(image_surface);
 
     int width = image_surface->w;
