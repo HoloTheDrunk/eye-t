@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 
     update_surface(screen_surface, image_surface);
 
-    save_image(image_surface, "blackandwhite.bmp");
+    //save_image(image_surface, "blackandwhite.bmp");
 
     wait_for_keypressed();
 
