@@ -1,8 +1,4 @@
-#include <err.h>
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
-#include "pixel_operations.h"
-
+#include "image_load.h"
 
 
 void init_sdl()
@@ -12,6 +8,9 @@ void init_sdl()
     if(SDL_Init(SDL_INIT_VIDEO) == -1)
         errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
 }
+
+
+
 
 SDL_Surface* load_image(char *path)
 {
@@ -26,10 +25,17 @@ SDL_Surface* load_image(char *path)
     return img;
 }
 
+
+
+
+
 int save_image(SDL_Surface* img, char *path)
 {
        return SDL_SaveBMP(img, path);
-}       
+}
+
+
+
 
 SDL_Surface* display_image(SDL_Surface *img)
 {
@@ -55,6 +61,10 @@ SDL_Surface* display_image(SDL_Surface *img)
     return screen;
 }
 
+
+
+
+
 void wait_for_keypressed()
 {
     SDL_Event event;
@@ -71,6 +81,10 @@ void wait_for_keypressed()
         SDL_PollEvent(&event);
     } while(event.type != SDL_KEYUP);
 }
+
+
+
+
 
 void SDL_FreeSurface(SDL_Surface *surface);
 
@@ -91,75 +105,7 @@ void greyscale(SDL_Surface *img)
     }
 }
 
-/*
-void blackandwhite(SDL_Surface *img)
-{
-    Uint32 pixel;
-    Uint8 r, g, b, Lum;
-    for (int i = 0; i < img->w; ++i)
-    {
-        for (int j = 0; j < img->h; ++j)
-        {
-            pixel = getpixel(img, i, j);
-            SDL_GetRGB(pixel, img->format, &r, &g, &b);
-            Lum = (r + g + b) / 3;
-
-		    if (luminosity > 170)
-			    luminosity = 255;
-		    else
-			    luminosity = 0;
-
-            putpixel(img, i, j, SDL_MapRGB(img->format, Lum, Lum, Lum));
-        }
-    }
-}
-*/
-int main(int argc, char *argv[])
-{
-	if (argc < 2)
-		errx(0, "A file has to be specified.");
-
-	SDL_Surface* image_surface;
-    SDL_Surface* screen_surface;
-
-    init_sdl();
-
-    image_surface = load_image(argv[1]);
-    screen_surface = display_image(image_surface);
-
-    int width = image_surface->w;
-    int height = image_surface->h;
-
-    for (int y = 0; y < height; y++)
-    {
-	    for (int x = 0; x < width; x++)
-	    {
-		    Uint8 r, g, b, luminosity;
-		    Uint32 pixel = get_pixel(image_surface, x, y);
-
-		    SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
-		    luminosity = (r + g + b) / 3;
-
-		    if (luminosity > 170)
-			    luminosity = 255;
-		    else
-			    luminosity = 0;
-
-		    pixel = SDL_MapRGB(image_surface->format, luminosity, luminosity, luminosity);
-		    put_pixel(image_surface, x, y, pixel);
-	    }
-
-    }
-
-    update_surface(screen_surface, image_surface);
-
-    //save_image(image_surface, "blackandwhite.bmp");
-
-    wait_for_keypressed();
-
-    SDL_FreeSurface(image_surface);
-    SDL_FreeSurface(screen_surface);
 
 
-    return 0;
-}
+
+

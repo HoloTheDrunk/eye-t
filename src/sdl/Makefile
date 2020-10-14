@@ -7,14 +7,14 @@ CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
 LDFLAGS=
 LDLIBS=`pkg-config --libs sdl` -lSDL_image
 
-all: blackwhite
-blackwhite: pixel_operations.o blackwhite.o
+all: main
+main: pixel_operations.o main.o image_load.o
 
-blackwhite.o: pixel_operations.h blackwhite.c
+main.o: pixel_operations.h main.c image_load.c
 
 clean:
 	${RM} *.o
 	${RM} *.d
-	${RM} blackwhite
+	${RM} main
 
 # END

@@ -37,6 +37,9 @@ Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y)
     return 0;
 }
 
+
+
+
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 {
     Uint8 *p = pixel_ref(surface, x, y);
@@ -71,6 +74,9 @@ void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
             break;
     }
 }
+
+
+
 
 void update_surface(SDL_Surface* screen, SDL_Surface* image)
 {
