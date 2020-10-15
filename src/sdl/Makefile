@@ -8,9 +8,9 @@ LDFLAGS=
 LDLIBS=`pkg-config --libs sdl` -lSDL_image
 
 all: main
-main: pixel_operations.o main.o image_load.o
+main: pixel_operations.o main.o image_load.o convolution_matrix.o otsu.o
 
-main.o: pixel_operations.h main.c image_load.c
+main.o: pixel_operations.h main.c image_load.c convolution_matrix.c otsu.c
 
 clean:
 	${RM} *.o
