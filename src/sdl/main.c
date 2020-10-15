@@ -1,6 +1,7 @@
 #include "image_load.h"
 #include "convolution_matrix.h"
 
+
 int main(int argc, char *argv[])
 {
 	if (argc < 2)
