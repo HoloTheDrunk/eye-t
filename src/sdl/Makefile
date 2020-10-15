@@ -8,13 +8,15 @@ LDFLAGS=
 LDLIBS=`pkg-config --libs sdl` -lSDL_image
 
 all: main
-main: pixel_operations.o main.o image_load.o
+main: pixel_operations.o main.o image_load.o ./types/matrix.o
 
-main.o: pixel_operations.h main.c image_load.c
+main.o: pixel_operations.h main.c image_load.c ./types/matrix.c
 
 clean:
 	${RM} *.o
 	${RM} *.d
 	${RM} main
+	${RM} ./types/*.o
+	${RM} ./types/*.d
 
 # END
