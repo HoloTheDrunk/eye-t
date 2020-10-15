@@ -53,7 +53,7 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
         m1 = sumB/w1;
         m2 = (sum-sumB)/w2;
 
-        valence = w1*w2*pow((m1-m2),2);
+        valence = w1*w2*(m1-m2)*(m1-m2);
 
         if (valence >= var_max)
         {
