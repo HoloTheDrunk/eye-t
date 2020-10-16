@@ -69,8 +69,9 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
         //printf("w1 =  %lu, w2 = %lu , nbr = %f \n", w1, w2, nbrPixel);
     }
 
-    Uint8 result = (threshold +threshold2 ) / 2;
-    return result;
+    printf("%i", threshold2);
+    //Uint8 result = (threshold +threshold2 ) / 2;
+    return threshold;
 }
 
 
