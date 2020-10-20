@@ -7,4 +7,8 @@
 
 SDL_Surface* convolute(SDL_Surface *surface, int matrix[][3]);
 
+
+
+
+
 #endif

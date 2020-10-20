@@ -15,7 +15,6 @@ SDL_Surface* Otsu_method(SDL_Surface* image)
     int width = image->w;
     int height= image->h;
     Uint8 threshold = Threshold_value(image, width, height);
-    printf("threshold = %i", threshold);
     return Applying_Threshold(image, threshold, width, height);
     //return image;
 }
@@ -25,7 +24,7 @@ SDL_Surface* Otsu_method(SDL_Surface* image)
 Uint8 Threshold_value(SDL_Surface* image, int width, int height)
 {
     Uint8 threshold =  0;
-    Uint8 threshold2 = 0;
+    //Uint8 threshold2 = 0;
     double nbrPixel = width * height;
     unsigned long histo[256];
 
@@ -63,13 +62,12 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
         {
             threshold = t;
             if(valence > var_max)
-                threshold2 = t;
+                //threshold2 = t;
             var_max = valence;
         }
         //printf("w1 =  %lu, w2 = %lu , nbr = %f \n", w1, w2, nbrPixel);
     }
 
-    printf("%i", threshold2);
     //Uint8 result = (threshold +threshold2 ) / 2;
     return threshold;
 }
