@@ -5,6 +5,35 @@
  * pointer to the new matrix.
  */
 
+
+
+
+SDL_Surface* matrix_to_image(matrix* mtx, int coef)
+{
+    Uint32 white = 0x00000000;
+    Uint32 black = 0xffffffff;
+    Uint32 color = 0xffffffff / coef;
+    SDL_Surface *New_Image = SDL_CreateRGBSurface(0,mtx->rows,mtx->cols,32,0,0,0,0);
+    for (int  i = 0; i < mtx->rows; i++)
+    {
+
+    for (int j = 0; j < mtx->cols; j++)
+    {
+        if (mtx->data[i *mtx->cols + j] == 1)
+            put_pixel(New_Image, i,j,white);
+        else
+        {
+            if (mtx->data[i*mtx->cols + j] == 0)
+                put_pixel(New_Image,i,j,black);
+            else
+                put_pixel(New_Image,i,j,color*mtx->data[i * mtx->cols + j]);
+        }
+    }
+    }
+    return New_Image;
+}
+
+
 matrix * image_to_matrix(SDL_Surface* image, int width, int height)
 {
     matrix* imgMatrix = newMatrix(width, height);

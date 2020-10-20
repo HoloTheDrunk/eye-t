@@ -9,6 +9,19 @@ Tuple NewTuple()
     return new_tuple;
 }
 
+void List_Tuple_Append(Tuple element, Tuple* list, int length)
+{
+    for(int i = 0; i < length; i++)
+    {
+        if (list[i].x == -1)
+        {
+            list[i].x = element.x;
+            list[i].y = element.y;
+            break;
+        }
+    }
+}
+
 
 Tuple SetTuple(Tuple tuple, int index, int val)
 {

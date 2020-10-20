@@ -57,5 +57,7 @@ int diagonal(matrix * v, matrix * mtx);
 // same a upper bur for the diagonal :)
 matrix * image_to_matrix(SDL_Surface* image, int width, int height);
 // create new matrix from image
+SDL_Surface* matrix_to_image(matrix* mtx, int coef);
+// converting a matrix to image by returning a image
 
 #endif
