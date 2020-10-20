@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     //IMAGE TREATMENT
 
-    int gaussian_blur[3][3] = {
+    /*int gaussian_blur[3][3] = {
         { 1, 2, 1 },
         { 2, 4, 2 },
         { 1, 2, 1 }
@@ -54,15 +54,6 @@ int main(int argc, char *argv[])
     //printMatrix(test);
 
     //screen_surface = display_image(image_preproc);
-=======
-    image_surface = 
-        convolute(
-            convolute(load_image(argv[1]), gaussian_blur),
-            edge_detection);
-
-    image_preproc = image_surface;//Otsu_method(image_surface);
->>>>>>> 15e77b6f0dc377b9b731a7a88e62c4097ce8997c
-
     screen_surface = display_image(auto_rotate(image_preproc));
 
     save_image(image_preproc, "eye_t.bmp");
