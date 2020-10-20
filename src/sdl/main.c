@@ -23,17 +23,21 @@ int main(int argc, char *argv[])
     //int width = image_surface->w;
     //int height = image_surface->h;
 
-    /*IMAGE TREATMENT
+    //IMAGE TREATMENT
 
-
-    /////////// LOOK HERE
     int gaussian_blur[3][3] = {
-        { 1, 1, 0},
-        { 1, 5, 0 },
-        { 0, 1, 1 }
+        { 1, 2, 1 },
+        { 2, 4, 2 },
+        { 1, 2, 1 }
     };
 
+    int edge_detection[3][3] = {
+        { 1, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0,-2 }
+    };
 
+<<<<<<< HEAD
     update_surface(screen_surface, image_preproc);*/
     /////////// NOW LOOK AT FUNCTION TYPES ON THE LEFT THEN AT CLI
 
@@ -50,6 +54,14 @@ int main(int argc, char *argv[])
     //printMatrix(test);
 
     //screen_surface = display_image(image_preproc);
+=======
+    image_surface = 
+        convolute(
+            convolute(load_image(argv[1]), gaussian_blur),
+            edge_detection);
+
+    image_preproc = image_surface;//Otsu_method(image_surface);
+>>>>>>> 15e77b6f0dc377b9b731a7a88e62c4097ce8997c
 
     screen_surface = display_image(auto_rotate(image_preproc));
 
@@ -59,7 +71,7 @@ int main(int argc, char *argv[])
 
     SDL_FreeSurface(image_surface);
     SDL_FreeSurface(screen_surface);
-
+    SDL_FreeSurface(image_preproc);
 
     return 0;
 }

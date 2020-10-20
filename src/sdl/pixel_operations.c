@@ -37,8 +37,20 @@ Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y)
 	return 0;
 }
 
+Uint8 get_v(SDL_Surface *surface, unsigned x, unsigned y)
+{
+    Uint8 r, g, b;
+    SDL_GetRGB(get_pixel(surface, x, y), surface->format, &r, &g, &b);
+    return (r + g + b)/3;
 
+}
 
+Uint8* get_rgb(SDL_Surface *surface, unsigned x, unsigned y)
+{
+    static Uint8 a[3];
+    SDL_GetRGB(get_pixel(surface, x, y), surface->format, &a[0], &a[1], &a[2]);
+    return a;
+}
 
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 {
