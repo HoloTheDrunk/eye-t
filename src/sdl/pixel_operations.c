@@ -5,7 +5,7 @@
 #include <err.h>
 #include "pixel_operations.h"
 
-	static inline
+static inline
 Uint8* pixel_ref(SDL_Surface *surf, unsigned x, unsigned y)
 {
 	int bpp = surf->format->BytesPerPixel;
