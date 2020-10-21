@@ -7,6 +7,8 @@
 #include "autorotate.h"
 #include "types/binary_tree.h"
 
+#define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
+
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -16,53 +18,54 @@ int main(int argc, char *argv[])
 
     SDL_Surface* image_surface;
     SDL_Surface* screen_surface;
-    SDL_Surface* image_preproc;
 
     init_sdl();
 
-    //int width = image_surface->w;
-    //int height = image_surface->h;
 
-    //IMAGE TREATMENT
+    // IMAGE TREATMENT
 
-    /*int gaussian_blur[3][3] = {
-        { 1, 2, 1 },
-        { 2, 4, 2 },
-        { 1, 2, 1 }
+    float gaussian_blur[] = {
+        .0625, .125, .0625,
+         .125,  .25,  .125,
+        .0625, .125, .0625
     };
 
-    int edge_detection[3][3] = {
-        { 1, 1, 0 },
-        { 1, 0, 0 },
-        { 0, 0,-2 }
-    };
-
-<<<<<<< HEAD
-    update_surface(screen_surface, image_preproc);*/
-    /////////// NOW LOOK AT FUNCTION TYPES ON THE LEFT THEN AT CLI
+    /*float edge_detection[] = {
+        -1,-1,-1,
+        -1, 8,-1,
+        -1,-1,-1
+    };*/
 
     image_surface = load_image(argv[1]);
-    image_preproc = Otsu_method(image_surface);
-    //image_preproc = image_surface;
-    //matrix * test = image_to_matrix(image_preproc, image_preproc->w, image_preproc->h);
-    //Bounds_Detector(image_preproc, image_preproc->h, image_preproc->w);
-    //auto_rotate(image_preproc);
+
+    image_surface = Otsu_method(image_surface);
+    image_surface = auto_rotate(image_surface); 
+
+    //matrix * test = image_to_matrix(image_surface, image_surface->w, image_surface->h);
+    //Bounds_Detector(image_surface, image_surface->h, image_surface->w);
+    //auto_rotate(image_surface);
     //Uint8 value = HoughTransform(test);
 
-    //printf("WIDTH : %i  HEIGHT : %i \n", image_preproc->w, image_preproc->h);
+    //printf("WIDTH : %i  HEIGHT : %i \n", image_surface->w, image_surface->h);
     //printf("THE CORRECT VALUE : %i", value);
     //printMatrix(test);
 
-    //screen_surface = display_image(image_preproc);
-    screen_surface = display_image(auto_rotate(image_preproc));
+    //screen_surface = display_image(image_surface);
+    //screen_surface = display_image(auto_rotate(image_surface));
 
-    save_image(image_preproc, "eye_t.bmp");
+    image_surface = convolute(image_surface, gaussian_blur,
+                ARRAYLEN(gaussian_blur));
+    /*image_surface = convolute(image_surface, edge_detection,
+                ARRAYLEN(edge_detection));*/
+
+    screen_surface = display_image(image_surface);
+
+    save_image(image_surface, "eye_t.bmp");
 
     wait_for_keypressed();
 
     SDL_FreeSurface(image_surface);
     SDL_FreeSurface(screen_surface);
-    SDL_FreeSurface(image_preproc);
 
     return 0;
 }
