@@ -1,7 +1,7 @@
 #include "hough_transform.h"
 #define DEG2RAD (3.14159/180.0f)
 
-Uint8 HoughTransform(matrix * mtx)
+Uint8 HoughTransform(Matrix * mtx)
 { /*CORRECT */
     int width ;
     int height ;
@@ -12,16 +12,16 @@ Uint8 HoughTransform(matrix * mtx)
     unsigned int Accumulator_theta_size = 180;
     double center_x = width / 2;
     double center_y = height / 2;
-    matrix * Accumulator =
+    Matrix * Accumulator =
         newMatrix(Accumulator_rho_size, Accumulator_theta_size);
     /*****************************************************************************/
     //Tuple* black_pixels = BlackPixel_to_List(mtx); // A REVOIR D URGENCE CA NE FORME PAS UN ARRAY MAISS BIEN QU UN SEUL TUPLE
     // CEST POUR CA QUE RIEN NE FONCTIONNE
     //PrintTuple(*black_pixels); // LA FONCTION PRINTTUPLE LE PROUVE BIEN
     //printf("SIZE OF BLACK PIXELS : %lu ", sizeof(black_pixels)/sizeof(black_pixels[0]));
-    for(int x = 1; x != mtx->rows ; x++)
+    for(int x = 1; x != mtx->width ; x++)
     {
-        for(int y = 1; y != mtx->cols ; y++)
+        for(int y = 1; y != mtx->height ; y++)
         {
             unsigned val = -1;
             getElement(mtx,x,y, &val);

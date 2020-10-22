@@ -1,6 +1,6 @@
 #include "binary_tree.h"
 
-BinTree* NewBinTree(matrix * mat)
+BinTree* NewBinTree(Matrix * mat)
 {
     BinTree *MatBT = malloc(sizeof(BinTree));
     MatBT->key = mat;
@@ -17,7 +17,6 @@ void Free_MatBT(BinTree* MatBT)
 {
     if (MatBT)
     {
-        deleteMatrix(MatBT->key);
         if (MatBT->txt)
             free(MatBT->txt);
         Free_MatBT(MatBT->right);
@@ -33,7 +32,7 @@ void MatBT_Print(BinTree* MatBT, size_t h)
 {
     if (!MatBT)
         return;
-    display_image(matrix_to_image(MatBT->key,1));
+    display_image(Matrix_To_Image(MatBT->key,1));
     MatBT_Print(MatBT->right,h + 1);
     MatBT_Print(MatBT->left,h + 1);
 }

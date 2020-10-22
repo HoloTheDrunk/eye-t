@@ -10,7 +10,7 @@
 
 typedef struct _BinTree
 {
-    matrix *key;
+    Matrix *key;
     int empty;
     int hor;
     int vert;
@@ -19,7 +19,7 @@ typedef struct _BinTree
     struct _BinTree *right;
 }BinTree;
 
-BinTree* NewBinTree(matrix * mat);
+BinTree* NewBinTree(Matrix * mat);
 // Create a new bintree with a matrix as key, the matrix should
 // contain the text matrix
 void Free_MatBT(BinTree* MatBT);

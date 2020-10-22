@@ -3,9 +3,9 @@
 #include "otsu.h"
 #include "types/matrix.h"
 #include "types/tuple.h"
-#include "hough_transform.h"
 #include "autorotate.h"
 #include "types/binary_tree.h"
+#include "test.h"
 
 #define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     image_surface = load_image(argv[1]);
 
     image_surface = Otsu_method(image_surface);
-    image_surface = auto_rotate(image_surface); 
+    //image_surface = auto_rotate(image_surface);
 
     //matrix * test = image_to_matrix(image_surface, image_surface->w, image_surface->h);
     //Bounds_Detector(image_surface, image_surface->h, image_surface->w);
@@ -51,14 +51,16 @@ int main(int argc, char *argv[])
     //printMatrix(test);
 
     //screen_surface = display_image(image_surface);
-    //screen_surface = display_image(auto_rotate(image_surface));
+    screen_surface = display_image(auto_rotate(image_surface));
 
     image_surface = convolute(image_surface, gaussian_blur,
                 ARRAYLEN(gaussian_blur));
     /*image_surface = convolute(image_surface, edge_detection,
                 ARRAYLEN(edge_detection));*/
 
-    screen_surface = display_image(image_surface);
+    //Segmentation(image_surface);
+
+    //screen_surface = display_image(image_surface);
 
     save_image(image_surface, "eye_t.bmp");
 

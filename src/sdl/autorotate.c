@@ -53,7 +53,7 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
     if (!clockwise)
         return SDL_RotationCentralN(image,angle);
     return SDL_RotationCentral(image,angle);
-   return neuf;
+    //return neuf;
 }
 
 
