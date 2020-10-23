@@ -5,8 +5,7 @@
 #include "types/tuple.h"
 #include "autorotate.h"
 #include "types/binary_tree.h"
-#include "test.h"
-
+#include "segmentation.h"
 #define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
 
 int main(int argc, char *argv[])
@@ -24,13 +23,13 @@ int main(int argc, char *argv[])
 
     // IMAGE TREATMENT
 
-    float gaussian_blur[] = {
+    /*float gaussian_blur[] = {
         .0625, .125, .0625,
          .125,  .25,  .125,
         .0625, .125, .0625
     };
 
-    /*float edge_detection[] = {
+    *float edge_detection[] = {
         -1,-1,-1,
         -1, 8,-1,
         -1,-1,-1
@@ -49,16 +48,16 @@ int main(int argc, char *argv[])
     //printf("WIDTH : %i  HEIGHT : %i \n", image_surface->w, image_surface->h);
     //printf("THE CORRECT VALUE : %i", value);
     //printMatrix(test);
+    //
+    screen_surface = display_image(image_surface);
+    //screen_surface = display_image(auto_rotate(image_surface));
 
-    //screen_surface = display_image(image_surface);
-    screen_surface = display_image(auto_rotate(image_surface));
-
-    image_surface = convolute(image_surface, gaussian_blur,
+    /*image_surface = convolute(image_surface, gaussian_blur,
                 ARRAYLEN(gaussian_blur));
-    /*image_surface = convolute(image_surface, edge_detection,
+    *image_surface = convolute(image_surface, edge_detection,
                 ARRAYLEN(edge_detection));*/
 
-    //Segmentation(image_surface);
+    SegmentationTest(image_surface);
 
     //screen_surface = display_image(image_surface);
 

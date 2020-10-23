@@ -94,7 +94,7 @@ SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold
             else
             {
                  Uint32 pixel1 = get_pixel(image, i, j);
-                 pixel1 = SDL_MapRGB(output->format, 255, 0, 0);
+                 pixel1 = SDL_MapRGB(output->format, 0, 0, 0);
                  put_pixel(output, i, j, pixel1);
             }
         }

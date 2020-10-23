@@ -16,7 +16,7 @@ void PrintMatrix(Matrix* m) {
     for(int x = 0; x < m->height; x++) {
         printf("%s", "\n");
         for(int y = 0; y < m->width; y++) {
-            printf("%i\t", m->data[y][x]);
+            printf("%i", m->data[y][x]);
         }
     }
     printf("\n");
@@ -42,7 +42,9 @@ Matrix* Image_To_Matrix(SDL_Surface* image, int width, int height)
         {
             Uint8 r,g,b;
             Uint32 pixel = get_pixel(image, i , j);
+
             SDL_GetRGB(pixel, image->format, &r, &g, &b);
+
             if (r == 0 && g == 0 && b == 0)
                 SetElement(matrix, i, j, 0);
             else

@@ -28,13 +28,13 @@ void Free_MatBT(BinTree* MatBT)
 
 
 
-void MatBT_Print(BinTree* MatBT, size_t h)
+void MatBT_Print(BinTree* MatBT)
 {
     if (!MatBT)
         return;
-    display_image(Matrix_To_Image(MatBT->key,1));
-    MatBT_Print(MatBT->right,h + 1);
-    MatBT_Print(MatBT->left,h + 1);
+    PrintMatrix(MatBT->key);
+    MatBT_Print(MatBT->right);
+    MatBT_Print(MatBT->left);
 }
 
 
