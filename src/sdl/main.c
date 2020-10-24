@@ -6,6 +6,7 @@
 #include "autorotate.h"
 #include "types/binary_tree.h"
 #include "segmentation.h"
+#include "flood_fill.h"
 
 #define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
 
@@ -34,11 +35,19 @@ int main(int argc, char *argv[])
     };*/
 
     image_surface = load_image(argv[1]);
+    
+    greyscale(image_surface);
 
-    image_surface = Otsu_method(image_surface);
+    image_surface = Otsu_method(image_surface, 255);
+
+    image_surface = auto_rotate(image_surface);
 
     image_surface = convolute(image_surface, gaussian_blur,
                 ARRAYLEN(gaussian_blur));
+
+    image_surface = Otsu_method(image_surface, 0);
+
+    fill_edges(image_surface, 0, 255);
 
     screen_surface = display_image(image_surface);
 

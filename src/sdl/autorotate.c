@@ -7,12 +7,14 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
 
     unsigned int first = 0;
     neuf = SDL_RotationCentralN(image, 20);
-    first =  Bounds_Detector(neuf, neuf->h, neuf->w).y -  Bounds_Detector(neuf, neuf->h, neuf->w).x;
+    first =  Bounds_Detector(neuf, neuf->h, neuf->w).y -
+        Bounds_Detector(neuf, neuf->h, neuf->w).x;
 
 
     unsigned int second = 0;
     neuf = SDL_RotationCentral(image, 20);
-    second =  Bounds_Detector(neuf, neuf->h, neuf->w).y -  Bounds_Detector(neuf, neuf->h, neuf->w).x;
+    second =  Bounds_Detector(neuf, neuf->h, neuf->w).y -
+        Bounds_Detector(neuf, neuf->h, neuf->w).x;
 
 
     Uint8 clockwise = first < second;
@@ -46,15 +48,18 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
             Current_Length =  tuple.y -  tuple.x;
                         display_image(neuf);
         }
-        printf("Current_Length : %i , Min_Length : %i\n", Current_Length, Previous_Length);
+
+        printf("Current_Length : %i, Min_Length : %i\n",
+                Current_Length, Previous_Length);
     }
 
     printf("\n %i",angle);
     if (!clockwise)
         return SDL_RotationCentralN(image,angle);
-    return SDL_RotationCentral(image,angle);
+    return SDL_RotationCentral(image,angle-1);
     //return neuf;
 }
+
 
 
 Tuple Bounds_Detector(SDL_Surface* image, unsigned height, unsigned width)
@@ -76,7 +81,7 @@ Tuple Bounds_Detector(SDL_Surface* image, unsigned height, unsigned width)
             pixel = get_pixel(image, x, y);
             SDL_GetRGB(pixel, image->format, &r, &g, &b);
 
-            if(r  == 255 && g == 0 && b == 0 ) // A CHANGER
+            if(r  == 255 && g == 0 && b == 0 )
             {
                 left = x;
                 break;
@@ -93,7 +98,7 @@ Tuple Bounds_Detector(SDL_Surface* image, unsigned height, unsigned width)
             pixel = get_pixel(image, x, y);
             SDL_GetRGB(pixel, image->format, &r, &g, &b);
 
-            if(r  == 255 && g == 0 && b == 0 ) // A CHANGER
+            if(r  == 255 && g == 0 && b == 0 )
             {
                 right = x;
                 break;

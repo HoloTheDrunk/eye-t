@@ -1,11 +1,11 @@
 #include "otsu.h"
 
-SDL_Surface* Otsu_method(SDL_Surface* image)
+SDL_Surface* Otsu_method(SDL_Surface* image, int red)
 {
     int width = image->w;
     int height= image->h;
     Uint8 threshold = Threshold_value(image, width, height);
-    return Applying_Threshold(image, threshold, width, height);
+    return Applying_Threshold(image, threshold, width, height, red);
 }
 
 
@@ -61,7 +61,7 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
 
 
 SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold
-        , int width, int height)
+        , int width, int height, int red)
 {
     SDL_Surface* output = new_rgb_surface(width, height);
     for(int i = 0; i < width; i++)
@@ -81,7 +81,7 @@ SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold
             else
             {
                  Uint32 pixel1 = get_pixel(image, i, j);
-                 pixel1 = SDL_MapRGB(output->format, 0, 0, 0);
+                 pixel1 = SDL_MapRGB(output->format, red, 0, 0);
                  put_pixel(output, i, j, pixel1);
             }
         }

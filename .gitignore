@@ -53,3 +53,5 @@ dkms.conf
 
 # Output image files
 eye_t.bmp
+log
+main

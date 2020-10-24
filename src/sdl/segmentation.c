@@ -331,9 +331,7 @@ BinTree* SegmentationRec(BinTree* bintree)//17
 
     if (IsLine(matrix))
     {
-        printf("a\n");
         int space_value = SpaceValue(matrix);
-        printf("b\n");
         int is_words = IsWords(matrix, space_value);
 
         Matrix* leftmatrix = CutVerLeft(matrix,FindVerPic(matrix,is_words));

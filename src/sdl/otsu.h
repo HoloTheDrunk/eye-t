@@ -10,14 +10,14 @@
 #include <math.h>
 
 
-SDL_Surface* Otsu_method(SDL_Surface* image);
+SDL_Surface* Otsu_method(SDL_Surface* image, int red);
 
 void Get_Histo(SDL_Surface* image,
         unsigned long histo[256], int width, int height);
 
 Uint8 Threshold_value(SDL_Surface* image, int width, int height);
 SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold,
-        int width, int height);
+        int width, int height, int red);
 
 void Set_Histo_0(unsigned long histo[256]);
 

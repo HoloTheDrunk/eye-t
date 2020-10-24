@@ -105,7 +105,3 @@ void greyscale(SDL_Surface *img)
     }
 }
 
-
-
-
-
