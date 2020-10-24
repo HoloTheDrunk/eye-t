@@ -1,0 +1,274 @@
+#include "segmentation.h"
+#include "image_load.h"
+#include "types/tuple.h"
+#include "types/matrix.h"
+#include "types/binary_tree.h"
+
+
+
+
+int WhiteLine(Matrix* matrix, int y) // TETED
+{
+    for(int x = 0; x < matrix->width; x++)
+    {
+        if (GetElement(matrix,x,y) == 0)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+int WhiteColumn(Matrix* matrix, int x) // TESTED
+{
+    for(int y = 0; y < matrix->height; y++)
+    {
+        if (GetElement(matrix,x,y) == 0)
+        {
+            return 0;
+        }
+    }
+    return 1;
+
+}
+
+
+Matrix* CopyMatrix(Matrix* matrix, int x1 , int x2, int y1, int y2) // TESTED
+{
+    Matrix* newOne = NewMatrix(x2-x1+1, y2-y1+1);
+
+    for(int x = x1; x < x2 + 1; x++)
+    {
+        for(int y = y1; y < y2 + 1; y++)
+        {
+            SetElement(newOne, x-x1, y-y1,  GetElement(matrix,x,y) );
+        }
+    }
+    return newOne;
+}
+
+
+
+Matrix* ClearBounds(Matrix* matrix) // TESTED
+{
+    int LowerBound_y = 0;
+    int UpperBound_y = 0;
+    int LeftBound_x  = 0;
+    int RightBound_x = 0;
+    for(int y = 0; y != matrix->height; y++)
+    {
+        if (!WhiteLine(matrix,y))
+        {
+            UpperBound_y = y;
+            break;
+        }
+    }
+    for (int y = matrix->height-1 ; y >= 0; y--)
+    {
+        if (!WhiteLine(matrix,y))
+        {
+            LowerBound_y = y;
+            break;
+        }
+    }
+    for(int x = 0; x != matrix->width; x++)
+    {
+        if (!WhiteColumn(matrix,x))
+        {
+            LeftBound_x = x;
+            break;
+        }
+    }
+    for (int x = matrix->width-1 ; x >= 0; x--)
+    {
+        if (!WhiteColumn(matrix,x))
+        {
+            RightBound_x = x;
+            break;
+        }
+    }
+
+    Matrix* clearedmatrix =
+        CopyMatrix(matrix, LeftBound_x, RightBound_x, UpperBound_y, LowerBound_y);
+    return clearedmatrix;
+}
+
+
+int FindHorPic(Matrix* matrix) // TESTED
+{
+    int y = 0;
+    int res = 0;
+    int y_index = 0;
+    int height = matrix->height;
+    int whiteline_found = 1;
+    for (int j = 0; j < height; j++)
+    {
+        if (WhiteLine(matrix,j) == 0 && whiteline_found == 1)
+        {
+            whiteline_found = 0;
+            y_index += 1;
+            if (y_index/2 >= res)
+            {
+                res += 1;
+                y = j;
+            }
+        }
+        else
+        {
+            if (WhiteLine(matrix,j) == 1 && whiteline_found == 0)
+            {
+                whiteline_found = 1;
+            }
+        }
+    }
+    return y;
+}
+
+
+int SpaceValue(Matrix* matrix) // TESTED
+{
+    int white_pixel_count = 0;
+    int space_count = 0;
+    int before_was_black = 0;
+    int width = matrix->width;
+    for (int i = 0; i < width ; i++)
+    {
+        if (WhiteColumn(matrix, i) == 1 && before_was_black == 0)
+        {
+            before_was_black += 1;
+            white_pixel_count += 1;
+            space_count  += 1;
+        }
+        else
+        {
+            if (WhiteColumn(matrix,i) == 1)
+                white_pixel_count += 1;
+            else
+                before_was_black = 0;
+        }
+    }
+    return (white_pixel_count / space_count) + 1;
+}
+
+
+int IsWords(Matrix* matrix, int space_value) // TESTED
+{
+    int before = 0;
+    int count = 0;
+    for(int x = 0; x != matrix->width ;x++)
+    {
+        if (WhiteColumn(matrix,x))
+        {
+            count++;
+            if (!before)
+                before = 1;
+        }
+        else
+        {
+            if (before && count > space_value)
+                return 0;
+            else
+            {
+                count = 0;
+                before = 0;
+            }
+        }
+    }
+    return 1;
+}
+
+int FindVerPic(Matrix* matrix, int is_words)  //9
+{
+    int x = 0;
+    int res = 0;
+    int x_index = 0;
+    int width = matrix->width;
+    int whitecolumn_found = 1;
+    if (is_words != 0)
+    {
+        for (int i = 0; i < width; i++)
+        {
+            if (WhiteColumn(matrix,i) == 1 && whitecolumn_found == 1)
+            {
+                whitecolumn_found = 0;
+                x_index += 1;
+                if (x_index/2 >= res)
+                {
+                    res += 1;
+                    x = i;
+                }
+            }
+            else
+            {
+                if (WhiteColumn(matrix,i) == 0 && whitecolumn_found == 0)
+                {
+                    whitecolumn_found = 1;
+                }
+            }
+        }
+    }
+    else
+    {
+        int white_pixel_count = 0;
+        int space_value = SpaceValue(matrix);
+        for (int i = 0; i < width; i++)
+        {
+            if (WhiteColumn(matrix,i) == 1 && whitecolumn_found == 1)
+            {
+                whitecolumn_found = 0;
+                white_pixel_count += 1;
+            }
+            else
+            {
+                if (WhiteColumn(matrix,i) == 1 && whitecolumn_found == 0)
+                {
+                    white_pixel_count += 1;
+                }
+                else
+                {
+                    if (WhiteColumn(matrix,i) == 0 && whitecolumn_found == 0)
+                    {
+                        whitecolumn_found = 1;
+                        if (white_pixel_count > space_value)
+                        {
+                            x_index += 1;
+                            if (x_index/2 >= res)
+                            {
+                                res += 1;
+                                x = i-1;
+                            }
+                        }
+                        white_pixel_count = 0;
+                    }
+                }
+            }
+        }
+    }
+    return x;
+}
+
+Matrix* CutHorUpper(Matrix* matrix1, int y) //10
+{
+    int width = matrix1->width;
+    Matrix* uppermatrix = CopyMatrix(matrix1,0,y,0,width);
+    return uppermatrix;
+}
+
+
+void  Segmentation(SDL_Surface* image)
+{
+    Matrix* matrix = Image_To_Matrix(image,image->w,image->h);
+    PrintMatrix(matrix);
+
+    Matrix* Test = ClearBounds(matrix);
+    PrintMatrix(Test);
+
+    //printf("THE SPACE MOUNTAIN VALUE IS %i \n", SpaceValue(Test));
+    //printf("THE LINE IS A WORD : %i \n", IsWords(Test, SpaceValue(Test)));
+    //printf("THE FIND VER PIC : %i \n",
+            //FindVerPic(Test,IsWords(Test,SpaceValue(Test))));
+
+    //Matrix* Top = CutHorUpper(Test, FindHorPic(Test));
+    //PrintMatrix(Top) ;
+}

@@ -18,12 +18,12 @@ typedef struct _BinTree
     struct _BinTree *left;
     struct _BinTree *right;
 }BinTree;
-
+// TreeB->left = NewBinTree(Left1);
 BinTree* NewBinTree(Matrix * mat);
 // Create a new bintree with a matrix as key, the matrix should
 // contain the text matrix
 void Free_MatBT(BinTree* MatBT);
 // Deletes a BinTree
-void MatBT_Print(BinTree* MatBT, size_t h);
+void MatBT_Print(BinTree* MatBT);
 // Print a bintree recursevly
 #endif

@@ -1,14 +1,4 @@
 #include "otsu.h"
-#include "pixel_operations.h"
-#include <stdio.h>
-#include <math.h>
-
-void Get_Histo(SDL_Surface* image, unsigned long histo[256], int width, int height);
-Uint8 Threshold_value(SDL_Surface* image, int width, int height);
-SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold,
-        int width, int height);
-
-void Set_Histo_0(unsigned long histo[256]);
 
 SDL_Surface* Otsu_method(SDL_Surface* image)
 {
@@ -16,7 +6,6 @@ SDL_Surface* Otsu_method(SDL_Surface* image)
     int height= image->h;
     Uint8 threshold = Threshold_value(image, width, height);
     return Applying_Threshold(image, threshold, width, height);
-    //return image;
 }
 
 
@@ -34,7 +23,8 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
     float valence = 0.0f;
     unsigned long sumB = 0;
     unsigned long var_max = 0;
-    // Weight, Mean, Variance : for the two class
+
+
     Set_Histo_0(histo);
     Get_Histo(image, histo, width, height);
     for(int i = 0; i < 256; i++)
@@ -65,10 +55,7 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
                 //threshold2 = t;
             var_max = valence;
         }
-        //printf("w1 =  %lu, w2 = %lu , nbr = %f \n", w1, w2, nbrPixel);
     }
-
-    //Uint8 result = (threshold +threshold2 ) / 2;
     return threshold;
 }
 
@@ -94,7 +81,7 @@ SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold
             else
             {
                  Uint32 pixel1 = get_pixel(image, i, j);
-                 pixel1 = SDL_MapRGB(output->format, 255, 0, 0);
+                 pixel1 = SDL_MapRGB(output->format, 0, 0, 0);
                  put_pixel(output, i, j, pixel1);
             }
         }
@@ -113,7 +100,8 @@ void Set_Histo_0(unsigned long histo[256])
 
 
 
-void Get_Histo(SDL_Surface* image, unsigned long histo[256], int width, int height)
+void Get_Histo(SDL_Surface* image, unsigned long histo[256], int width,
+        int height)
     // Getting the histo for all the pixels
 {
 
