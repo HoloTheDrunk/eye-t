@@ -5,75 +5,67 @@
 #include "toolbox.h"
 
 
-int VerifyInbound(struct Matrix matrix, int x, int y);
+int IsInbound(struct MatrixNN matrix, int x, int y);
 
 /*
- * Matrix structure and basic operations.
+ * Matrix structure and basic operations on them.
 */
-//========================================//
 
-// Create a matrix; return the matrix
-struct Matrix CreateMatrix(int rows, int columns)
+// Create a matrix and return it.
+struct MatrixNN CreateMatrix(int rows, int columns)
 {
-	struct Matrix matrix;
+	struct MatrixNN matrix;
        	
-	matrix.rows = rows;
 	matrix.columns = columns;
+	matrix.rows = rows;
 
-	matrix.mat = malloc(sizeof(double)*columns*rows);
+	matrix.pointerStart = malloc(sizeof(double)*columns*rows);
 
 	return matrix;
 }
 
-// Testing if given coordinates are correct
-int VerifyInbound(struct Matrix matrix, int x, int y)
+// Testing if the given coordinates are not out of bounds.
+int IsInbound(struct MatrixNN matrix, int x, int y)
 {
-	return (x < matrix.rows &&  y < matrix.columns); 
+	return (x < matrix.columns && y < matrix.rows); 
 }
 
 
-// Function to navigate in the matrix; return matrix(x, y)
-double NavMatrix(struct Matrix matrix, int x, int y)
+// Loop in the matrix to return the value at the index given.
+double NavMatrix(struct MatrixNN matrix, int x, int y)
 {
-	if (!VerifyInbound(matrix, x, y))
-		printf("Out of bound: Wrong coordinates were given.\n");
+	if (!IsInbound(matrix, x, y))
+		printf("Out of bound: Wrong coordinates were given.[%d, %d]\n", x, y);
 	
-	return *(matrix.mat + (x * matrix.columns + y));
+	return *(matrix.pointerStart + (y * matrix.columns + x));
 }
 
-// Function to change a value in a matrix
-void ChangeMatrix(struct Matrix matrix, int x, int y, float val)
+// Change the value at index by the value given.
+void ChangeValue(struct MatrixNN matrix, int x, int y, float value)
 {
-	if (!VerifyInbound(matrix, x, y))
-	{
-		printf("====================\n");
-                printf("Error in coordinates\n");
-                printf("====================\n");
-	}
- 
-	*(matrix.mat + x * matrix.columns + y) = val;
+	if (!IsInbound(matrix, x, y))
+		printf("Out of bound: Wrong coordinates were given.[%d, %d]\n", x, y);
+	
+	*(matrix.pointerStart + y * matrix.columns + x) = value;
 }
 
-// Initialize the matrix with zeros
-void InitMatrix(struct Matrix matrix)
+// Initialize the matrix with a random value.
+void InitMatrix(struct MatrixNN matrix)
 {
-	for (int i = 0; i < matrix.rows; i++)
+	for (int y = 0; y < matrix.rows; y++)
         {
-                for(int j = 0; j < matrix.columns; j++)
-                {
-                        ChangeMatrix(matrix, i, j, Random());
-                }
+                for(int x = 0; x < matrix.columns; x++)
+                        ChangeValue(matrix, x, y, Random());
         }    
 }
 
-void InitMatrixZero(struct Matrix matrix)
+// Initialize the matrix with 0s.
+void InitMatrixZero(struct MatrixNN matrix)
 {
-	for (int i = 0; i < matrix.rows; i++)
+	for (int y = 0; y < matrix.rows; y++)
         {
-                for(int j = 0; j < matrix.columns; j++)
-                {
-                        ChangeMatrix(matrix, i, j, 0);
-                }
+                for(int x = 0; x < matrix.columns; x++)
+                        ChangeValue(matrix, x, y, 0);
         }
 
 }

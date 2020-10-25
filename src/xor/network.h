@@ -5,49 +5,53 @@
 
 struct NeuralNetwork
 {
-// Size of the neural network
+	// Size of the neural network.
 	int nbInputs;
 	int nbHidden;
 	int nbOutputs;
-	
-	// Matrix of the input and expected values.
-        struct Matrix inputValues;
-	struct Matrix expectedValues;
-	
-	// Matrix of weights (I: input, H: hidden, O: output).
-	struct Matrix weightsIH;
-	struct Matrix weigthsHO;
+
+	// Checks if the weigths have to be loaded from a file.
+	int toLoad;
+
+	// MatrixNN of the input and expected values.
+	struct MatrixNN inputValues;
+	struct MatrixNN expectedValues;
+
+	// MatrixNN of weights (I: input, H: hidden, O: output).
+	struct MatrixNN weightsIH;
+	struct MatrixNN weightsHO;
+
 	// Usefull for backpropagation.
-	struct Matrix previousWeightsIH;
-	struct Matrix previousWeightsHO;
-	
-	// Matrix of biases.
-	struct Matrix biasesH;
-	struct Matrix gradientsBiases;
-	struct Matrix previousOutputBias;
-	struct Matrix previousBiasesH;
-        struct Matrix gradientBiasOutput;
-        struct Matrix biasOutput;
-        
-	// Matrix for Gradient Descent.
-	struct Matrix gradientsHO;
-	struct Matrix gradientsIH;
-	
-	// Matrix of the sum of weights * inputs and weights * outputs of H.
-	struct Matrix sumsIH;
-	struct Matrix sumHOutputs;
-	
+	struct MatrixNN previousWeightsIH;
+	struct MatrixNN previousWeightsHO;
+
+	// MatrixNN of biases.
+	struct MatrixNN biasesH;
+	struct MatrixNN gradientsBiases;
+	struct MatrixNN previousOutputBias;
+	struct MatrixNN previousBiasesH;
+	struct MatrixNN gradientBiasOutput;
+	struct MatrixNN biasOutput;
+
+	// MatrixNN for Gradient Descent.
+	struct MatrixNN gradientsHO;
+	struct MatrixNN gradientsIH;
+
+	// MatrixNN of the sum of weights * inputs and weights * outputs of H.
+	struct MatrixNN sumsIH;
+	struct MatrixNN sumHOutputs;
+
 	// Error values
-	struct Matrix errors;
-	
-	// Matrix for derivatives.
-	struct Matrix derivatives;
-	struct Matrix derivativeOutput;
-	
-	struct Matrix finalOutput;
-	// Matrix of the output of the hidden layer (after the sum)
-	struct Matrix outputH;
-	
+	struct MatrixNN errors;
+
+	// MatrixNN for derivatives.
+	struct MatrixNN derivatives;
+	struct MatrixNN derivativeOutput;
+
+	struct MatrixNN finalOutput;
+	// MatrixNN of the output of the hidden layer (after the sum)
+	struct MatrixNN outputH;
+
 	double learningRate;
 	double constante;
 };

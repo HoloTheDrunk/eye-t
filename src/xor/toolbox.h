@@ -6,27 +6,25 @@
 */
 
 // Matrix struct declaration.
-struct Matrix
+struct MatrixNN
 {
-        // Size of the matrix
+        // Size of the matrix.
         int rows;
         int columns;
 
-        // Pointer to the matrix
-        double *mat;
+        // Pointer to the start of the matrix.
+        double *pointerStart;
 };
 
-// Function to change a value in a matrix
-void ChangeMatrix(struct Matrix matrix, int x, int y, float val);
+void ChangeValue(struct MatrixNN matrix, int x, int y, float value);
 
-// Function to navigate in the matrix; return matrix(x, y)
-double NavMatrix(struct Matrix matrix, int x, int y);
+double NavMatrix(struct MatrixNN matrix, int x, int y);
 
-void InitMatrix(struct Matrix matrix);
+void InitMatrix(struct MatrixNN matrix);
 
-void InitMatrixZero(struct Matrix matrix);
-// Create a matrix; return the matrix
-struct Matrix CreateMatrix(int rows, int colums);
+void InitMatrixZero(struct MatrixNN matrix);
+
+struct MatrixNN CreateMatrix(int rows, int colums);
 
 /*
  * Miscellaneous
