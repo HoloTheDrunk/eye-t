@@ -37,7 +37,7 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
             neuf = SDL_RotationCentralN(image,angle);
             Tuple tuple =  Bounds_Detector(neuf, neuf->h, neuf->w);
             Current_Length =  tuple.y -  tuple.x;
-                        display_image(neuf);
+            display_image(neuf);
         }
         else
         {
@@ -46,7 +46,7 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
             neuf = SDL_RotationCentral(image,angle);
             Tuple tuple =  Bounds_Detector(neuf, neuf->h, neuf->w);
             Current_Length =  tuple.y -  tuple.x;
-                        display_image(neuf);
+            display_image(neuf);
         }
 
         printf("Current_Length : %i, Min_Length : %i\n",

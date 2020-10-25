@@ -20,5 +20,6 @@ clean:
 	${RM} main
 	${RM} ./types/*.o
 	${RM} ./types/*.d
+	${RM} xor
 
 # END
