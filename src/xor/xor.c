@@ -24,12 +24,9 @@ struct NeuralNetwork InitializeNetwork()
 	// Initializing the expected outputs matrix.
 	network.expectedValues = CreateMatrix(4, 2);
 	InitMatrixZero(network.expectedValues);
-	ChangeValue(network.expectedValues, 0, 0, 0);
 	ChangeValue(network.expectedValues, 0, 1, 1);
 	ChangeValue(network.expectedValues, 0, 2, 1);
-	ChangeValue(network.expectedValues, 0, 3, 0);
-
-
+	
 	// Initializing error matrix.
 	network.errors = CreateMatrix(4, 2);
 	ChangeValue(network.errors, 0, 0, 1);
@@ -44,9 +41,9 @@ struct NeuralNetwork InitializeNetwork()
 	network.biasesH = CreateMatrix(1, network.nbHidden);
 	network.sumsIH = CreateMatrix(1, network.nbHidden);
 	network.derivatives = CreateMatrix(1, network.nbHidden);
-	network.previousWeightsIH = CreateMatrix(network.nbInputs, 
+	network.previousWeightsIH = CreateMatrix(network.nbInputs,
 			network.nbHidden);
-	network.previousWeightsHO = CreateMatrix(network.nbHidden, 
+	network.previousWeightsHO = CreateMatrix(network.nbHidden,
 			network.nbOutputs);
 	network.previousBiasesH = CreateMatrix(1, network.nbHidden);
 	network.gradientsIH = CreateMatrix(network.nbInputs, network.nbHidden);
@@ -72,11 +69,11 @@ struct NeuralNetwork InitializeNetwork()
 	InitMatrixZero(network.previousBiasesH);
 	ChangeValue(network.sumHOutputs, 0, 0, 0.0);
 	ChangeValue(network.previousOutputBias, 0, 0, 0.0);
-	
+
 	//Values usefull for bp.
 	network.learningRate = 1.618;
 	network.constante =  0.25;
-	
+
 	return network;
 }
 
@@ -98,7 +95,7 @@ void ForwardPass(struct NeuralNetwork network, int x, int y, int epoch)
 		ChangeValue(network.outputH, v, 0, Sigmoid(SumIH));
 	}
 
-	// Computations of weigths and biases between hidden 
+	// Computations of weigths and biases between hidden
 	// layer and output layer.
 	double SumHO = 0;
 	for (int v = 0; v < network.nbHidden; v++)
@@ -126,14 +123,14 @@ void ForwardPass(struct NeuralNetwork network, int x, int y, int epoch)
 }
 
 void Derivative(struct NeuralNetwork network, int x)
-	
+
 {
 	// Initialise the derivative of output in first position in the list.
 	ChangeValue(network.derivativeOutput, 0, 0, -(NavMatrix(network.errors,
 					x, 0) *
 				exp(NavMatrix(network.sumHOutputs, 0, 0))) /
 			(pow((1 + exp(NavMatrix(network.sumHOutputs, 0, 0))), 2)));
-	
+
 	for (int v = 0; v < network.nbHidden; v++)
 	{
 		//Calculate the derivative of each
@@ -159,7 +156,7 @@ void GradientDescent(struct NeuralNetwork network, int y)
 					NavMatrix(network.derivatives, w, 0));
 		}
 	}
-	
+
 	//Initializes the gradients for the hidden biases.
 	for (int v = 0; v < network.nbHidden; v++)
 	{
@@ -210,7 +207,7 @@ void UpdateWeights(struct NeuralNetwork network)
 		ChangeValue(network.weightsHO, 0, v,
 				(NavMatrix(network.weightsHO, 0, v) +
 				 NavMatrix(network.previousWeightsHO, 0, v)));
-	} 
+	}
 
 	// Updating the biases of the hidden layer.
 	for (int v = 0; v < network.nbHidden; v++)
@@ -251,7 +248,7 @@ int main()
 	if (network.toLoad == 1)
 		return 0;
 
-	for(int epoch = 0; epoch <= 1000000; epoch++)
+	for(int epoch = 0; epoch <= 10000000; epoch++)
 	{
 		for (int x = 0; x < 2; x++)
 		{
