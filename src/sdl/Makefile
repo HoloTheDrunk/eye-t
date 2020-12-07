@@ -2,10 +2,10 @@
 
 CC=gcc
 
-CPPFLAGS=`pkg-config --cflags sdl` -MMD
-CFLAGS= -Wall -Wextra -Werror -std=c99 -O3 -g
+CFLAGS= `pkg-config --cflags sdl gtk+-3.0`\
+		-Wall -Wextra -Werror -std=c99 -O3 -MMD
 LDFLAGS=
-LDLIBS=`pkg-config --libs sdl` -lSDL_image -lm
+LDLIBS=`pkg-config --libs sdl gtk+-3.0` -lSDL_image -lm
 
 all: main
 main: pixel_operations.o main.o image_load.o convolution_matrix.o otsu.o types/matrix.o types/tuple.o types/binary_tree.o autorotate.o rotation.o segmentation.o flood_fill.o
