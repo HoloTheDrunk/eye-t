@@ -4,16 +4,19 @@
 typedef struct BannerMenu
 {
     GtkMenuBar *menu;
-    GtkMenuItem *file;
+    GtkMenuItem *open;
 } BannerMenu;
 
 typedef struct UserInterface
 {
-    // Main window
+    // Main top-level window
     GtkWindow *window;
 
+    // Auxilliary top-levels
+    GtkFileChooserDialog *file_chooser;
+
     // Top menu
-    // BannerMenu *banner_menu;
+    BannerMenu banner_menu;
 
     // Images
     GtkImage *input_image;
@@ -22,6 +25,20 @@ typedef struct UserInterface
 gboolean on_input_image_button_release_event(UserInterface *ui)
 {
     g_print("coucou 1 %p", ui);
+    return FALSE;
+}
+
+gboolean on_open_activate(UserInterface *ui)
+{
+    if (gtk_dialog_run (GTK_DIALOG (ui->file_chooser)) == GTK_RESPONSE_ACCEPT)
+    {
+        char *filename;
+
+        filename = gtk_file_chooser_get_filename(
+                GTK_FILE_CHOOSER(ui->file_chooser));
+        gtk_image_set_from_file(ui->input_image, filename);
+    }
+
     return FALSE;
 }
 
@@ -44,10 +61,16 @@ int main()
 
     GtkWindow *window =
         GTK_WINDOW(gtk_builder_get_object(builder, "org.gtk.ocr"));
-    // GtkMenuBar *menu =
-    //     GTK_MENU_BAR(gtk_builder_get_object(builder, "menu"));
-    // GtkMenuItem *file =
-    //     GTK_MENU_ITEM(gtk_builder_get_object(builder, "file"));
+    GtkFileChooserDialog *file_chooser =
+        GTK_FILE_CHOOSER_DIALOG(gtk_file_chooser_dialog_new(
+                    "Open File", window, GTK_FILE_CHOOSER_ACTION_OPEN,
+                    "Cancel", GTK_RESPONSE_CANCEL,
+                    "Open", GTK_RESPONSE_ACCEPT,
+                    NULL));
+    GtkMenuBar *menu =
+        GTK_MENU_BAR(gtk_builder_get_object(builder, "menu"));
+    GtkMenuItem *open =
+        GTK_MENU_ITEM(gtk_builder_get_object(builder, "open"));
     GtkImage *input_image =
         GTK_IMAGE(gtk_builder_get_object(builder, "input_image"));
 
@@ -55,17 +78,20 @@ int main()
     {
         .window = window,
 
-        // .banner_menu =
-        // {
-        //     .menu = menu,
-        //     .file = file,
-        // }//,
+        .file_chooser = file_chooser,
+
+        .banner_menu =
+        {
+            .menu = menu,
+            .open = open,
+        },
 
         .input_image = input_image,
     };
 
     // Connects event handlers.
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(open, "activate", G_CALLBACK(on_open_activate), &ui);
     g_signal_connect(input_image, "button-release-event",
             G_CALLBACK(on_input_image_button_release_event), &ui);
 
