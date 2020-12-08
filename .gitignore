@@ -55,3 +55,9 @@ dkms.conf
 eye_t.bmp
 log
 main
+
+# Legacy files
+legacy*
+
+# Swap files
+*~

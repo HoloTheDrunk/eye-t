@@ -140,7 +140,6 @@
             <property name="can_focus">False</property>
             <property name="icon_name">insert-image</property>
             <property name="icon_size">6</property>
-            <signal name="button-release-event" handler="on_input_image_button_release_event" swapped="no"/>
           </object>
           <packing>
             <property name="resize">True</property>
