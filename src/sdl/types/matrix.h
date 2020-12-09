@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <SDL/SDL.h>
 #include "SDL/SDL_image.h"
 #include "../pixel_operations.h"
@@ -33,5 +34,6 @@ Matrix * Image_To_Matrix(SDL_Surface* image, int width, int height);
 // create new matrix from image
 SDL_Surface* Matrix_To_Image(Matrix* mtx, int coef);
 // converting a matrix to image by returning a image
+Matrix* ResizeMatrix(Matrix* matrix, int newHt, int newWid);
 
 #endif
