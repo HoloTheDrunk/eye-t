@@ -3,7 +3,7 @@
 CC=gcc
 
 CFLAGS= `pkg-config --cflags sdl gtk+-3.0`\
-		-Wall -Wextra -Werror -std=c99 -O3 -MMD
+		-Wall -Wextra -std=c99 -O3 -MMD
 LDFLAGS=
 LDLIBS=`pkg-config --libs sdl gtk+-3.0` -lSDL_image -lm
 

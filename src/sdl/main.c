@@ -5,6 +5,7 @@ typedef struct BannerMenu
 {
     GtkMenuBar *menu;
     GtkMenuItem *open;
+    GtkMenuItem *about;
 } BannerMenu;
 
 typedef struct UserInterface
@@ -12,14 +13,18 @@ typedef struct UserInterface
     // Main top-level window
     GtkWindow *window;
 
-    // Auxilliary top-levels
-    // GtkFileChooserDialog *file_chooser;
-
     // Top menu
     BannerMenu banner_menu;
 
     // Images
     GtkImage *input_image;
+
+    // Buttons
+    GtkCheckButton *save_output_toggle;
+    GtkCheckButton *spellcheck_toggle;
+    GtkSpinButton *manual_rotation;
+    GtkFileChooserButton *save_button;
+    GtkButton *output_button;
 } UserInterface;
 
 gboolean on_input_image_button_release_event(UserInterface *ui)
@@ -28,8 +33,10 @@ gboolean on_input_image_button_release_event(UserInterface *ui)
     return FALSE;
 }
 
-gboolean on_open_activate(UserInterface *ui)
+gboolean on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+    UserInterface *ui = user_data;
+
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
             "Open File", ui->window, 
             GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -42,7 +49,8 @@ gboolean on_open_activate(UserInterface *ui)
     {
         case GTK_RESPONSE_ACCEPT:
             filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-            ui->input_image = GTK_IMAGE(gtk_image_new_from_file(filename));
+            g_print("Loading file %s to image %p\n", filename, ui->input_image);
+            gtk_image_set_from_file(ui->input_image, filename);
             break;
         case GTK_RESPONSE_CANCEL:
             g_print("cancelled\n");
@@ -85,12 +93,21 @@ int main()
         GTK_MENU_ITEM(gtk_builder_get_object(builder, "open"));
     GtkImage *input_image =
         GTK_IMAGE(gtk_builder_get_object(builder, "input_image"));
+    GtkCheckButton *save_output_toggle =
+        GTK_CHECK_BUTTON(gtk_builder_get_object(builder, "save_output_toggle"));
+    GtkCheckButton *spellcheck_toggle =
+        GTK_CHECK_BUTTON(gtk_builder_get_object(builder, "spellcheck_toggle"));
+    GtkSpinButton *manual_rotation =
+        GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "manual_rotation"));
+    gtk_spin_button_set_range(manual_rotation, -180, 180);
+    GtkFileChooserButton *save_button =
+        GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "save_button"));
+    GtkButton *output_button =
+        GTK_BUTTON(gtk_builder_get_object(builder, "manual_rotation"));
 
     UserInterface ui =
     {
         .window = window,
-
-        // .file_chooser = file_chooser,
 
         .banner_menu =
         {
@@ -99,6 +116,12 @@ int main()
         },
 
         .input_image = input_image,
+
+        .save_output_toggle = save_output_toggle,
+        .spellcheck_toggle = spellcheck_toggle,
+        .manual_rotation = manual_rotation,
+        .save_button = save_button,
+        .output_button = output_button,
     };
 
     // Connects event handlers.
@@ -109,6 +132,3 @@ int main()
 
     return 0;
 }
-
-
-
