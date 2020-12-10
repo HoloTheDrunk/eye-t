@@ -26,4 +26,6 @@ void Free_MatBT(BinTree* MatBT);
 // Deletes a BinTree
 void MatBT_Print(BinTree* MatBT);
 // Print a bintree recursevly
+void Resize_Leaves(BinTree* bin, int width, int height);
+// Resize in place all the leaves by width*height
 #endif

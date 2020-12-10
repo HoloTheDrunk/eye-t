@@ -1,4 +1,5 @@
 #include "matrix.h"
+#define min(a,b) (a<=b?a:b)
 
 Matrix* NewMatrix(int n_rows, int n_cols) {
     struct Matrix* matrix = malloc(sizeof(Matrix));
@@ -78,4 +79,41 @@ SDL_Surface* Matrix_To_Image(Matrix* mtx, int coef)
     }
     return New_Image;
 }
+/*
+def nearestNeighborScaling(matrix , newWid, newHt ):
+    target = makeEmptyMatrixf(newWid, newHt)
+    width = len(matrix[0])
+    height = len(matrix)
+    print("Width : " + str(width) + " Height : " + str(height))
+    for x in range(newWid):
+        for y in range(newHt):
+            srcX = int( round( float(x) / float(newWid) * float(width) ) )
+            srcY = int( round( float(y) / float(newHt) * float(height) ) )
+            srcX = min( srcX, width-1)
+            srcY = min( srcY, height-1)
+            target[x][y] = matrix[srcX][srcY]
+    return target
+*/
 
+
+Matrix* ResizeMatrix(Matrix* matrix, int newHt, int newWid)
+{
+    Matrix* target = NewMatrix(newHt, newWid);
+    int width = matrix->width;
+    int height = matrix->height;
+    int srcY = 0;
+    int srcX = 0;
+    for(int x = 0; x < newWid; x++)
+    {
+        for(int y = 0; y < newHt; y++)
+        {
+            srcX = (int)(roundf((float)x/(float)newWid * (float)width));
+            srcY = (int)(roundf((float)y / (float)newHt * (float)height));
+            srcX = min(srcX, width-1);
+            srcY = min(srcY, height-1);
+            int val = GetElement(matrix, srcX, srcY);
+            SetElement(target, x, y, val);
+        }
+    }
+    return target;
+}

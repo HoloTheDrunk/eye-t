@@ -148,8 +148,10 @@ int SpaceValue(Matrix* matrix) // TESTED
                 before_was_black = 0;
         }
     }
-    if (space_count ==  0)
+    if (space_count ==  0){
         printf("SPACE VALUE\n");
+        return 0;
+    }
     return (white_pixel_count / space_count) + 1;
 }
 
@@ -283,18 +285,20 @@ Matrix* CutVerRight(Matrix* matrix1, int x)  // TESTED
     return rightmatrix;
 }
 
+int IsLetterij(Matrix* matrix);
+
 
 int IsLine(Matrix* matrix) //14
 {
     int height = matrix->height;
     for (int j = 0; j < height; j++)
     {
-        if (WhiteLine(matrix,j))
+        if (WhiteLine(matrix,j) && IsLetterij(matrix))
         {
             return 0;
         }
     }
-    return 1;
+    return 1 ;//!IsLetterij(matrix);
 }
 
 
@@ -305,19 +309,110 @@ int IsLetter(Matrix* matrix) //15
     for (int i = 1; i < width; i++)
     {
         if (WhiteColumn(matrix,i))
-        {
             return 0;
-        }
         for (int j = 0; j < height ; j++)
-        {
             if (WhiteLine(matrix,j))
                 return 0;
-        }
     }
     return 1;
 }
 
+int IsLetterij(Matrix* matrix)
+{
+    unsigned long countWhite = 0;
+    unsigned long countBlack = 0;
 
+    int trigger1 = 0;
+    int trigger2 = 0;
+    int width = matrix->width;
+
+    for (int j = 0; j < width; j++)
+        if (WhiteColumn(matrix,j))
+            return 0;
+
+    for(int i = matrix->height; i >= 0; i--)
+    {
+        if(!WhiteLine(matrix,i) && !trigger1)
+        {
+            trigger1 = 1;
+            countBlack++;
+        }
+        else if (trigger1 && !WhiteLine(matrix,i))
+        {
+            countBlack++;
+        }
+        else if (trigger1 && WhiteLine(matrix,i))
+        {
+            trigger1 = 0;
+            trigger2 = 1;
+            countWhite++;
+        }
+        else if (trigger2 && WhiteLine(matrix,i))
+        {
+            countWhite++;
+        }
+        else if (trigger2 && !WhiteLine(matrix,i))
+        {
+            break;
+        }
+    }
+    float ratio = (float)countWhite/ (float)countBlack;
+    return (ratio < 0.2) ;
+}
+
+
+
+
+BinTree* SegmentationRec(BinTree* bintree)//17
+{
+    Matrix* originalmatrix = bintree->key;
+    Matrix* matrix = ClearBounds(originalmatrix);
+    printf("IsLetterij(originalmatrix) : %i\n", IsLetterij(originalmatrix));
+    if (IsLetter(originalmatrix) || IsLetterij(originalmatrix))
+    {
+        return bintree;
+    }
+
+
+    if (IsLine(matrix))
+    {
+        int space_value = SpaceValue(matrix);
+        int is_words = IsWords(matrix, space_value);
+
+        Matrix* leftmatrix = CutVerLeft(matrix,FindVerPic(matrix,is_words));
+
+        Matrix* rightmatrix = CutVerRight(matrix,FindVerPic(matrix,is_words));
+
+        if (is_words)
+        {
+            bintree->txt = " ";
+        }
+        else
+        {
+            bintree->txt = "";
+        }
+        bintree->left = NewBinTree(ClearBounds(leftmatrix));
+        bintree->right = NewBinTree(ClearBounds(rightmatrix));
+        //MatBT_Print(bintree->right);
+        //MatBT_Print(bintree->left);
+        SegmentationRec(bintree->left);
+        SegmentationRec(bintree->right);
+
+    }
+    else
+    {
+        bintree->txt = "\n";
+        Matrix* uppermatrix = CutHorUpper(matrix,FindHorPic(matrix));
+        Matrix* lowermatrix = CutHorLower(matrix,FindHorPic(matrix));
+        bintree->left = NewBinTree(ClearBounds(uppermatrix));
+        bintree->right = NewBinTree(ClearBounds(lowermatrix));
+        SegmentationRec(bintree->left);
+        SegmentationRec(bintree->right);
+    }
+    return bintree;
+}
+
+/*
 BinTree* SegmentationRec(BinTree* bintree)//17
 {
     Matrix* originalmatrix = bintree->key;
@@ -367,7 +462,7 @@ BinTree* SegmentationRec(BinTree* bintree)//17
     }
     return bintree;
 }
-
+*/
 
 BinTree* Segmentation(SDL_Surface* image) //16
 {
@@ -380,6 +475,7 @@ BinTree* Segmentation(SDL_Surface* image) //16
     return SegmentationRec(bintree);
 
 }
+
 
 
 
@@ -408,6 +504,9 @@ void  SegmentationTest(SDL_Surface* image)
     TreeB->right = NewBinTree(Right1);
     //RightB->key = Right1;
     */
-    MatBT_Print(Segmentation(image));
-    //PrintMatrix(Test);
+    BinTree* bintree = Segmentation(image);
+    Resize_Leaves(bintree,28,28);
+    MatBT_Print(bintree);
+    //Matrix* Test = NewMatrix(10,10);
+    //PrintMatrix(ResizeMatrix(Test, 5 ,5));
 }
