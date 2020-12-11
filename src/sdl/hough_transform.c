@@ -1,8 +1,8 @@
-#include "hough_transform.h"
+/*#include "hough_transform.h"
 #define DEG2RAD (3.14159/180.0f)
 
 Uint8 HoughTransform(Matrix * mtx)
-{ /*CORRECT */
+{ CORRECT
     int width ;
     int height ;
     if (!(nRows(mtx, &width) && nCols(mtx, &height)))
@@ -14,7 +14,7 @@ Uint8 HoughTransform(Matrix * mtx)
     double center_y = height / 2;
     Matrix * Accumulator =
         newMatrix(Accumulator_rho_size, Accumulator_theta_size);
-    /*****************************************************************************/
+
     //Tuple* black_pixels = BlackPixel_to_List(mtx); // A REVOIR D URGENCE CA NE FORME PAS UN ARRAY MAISS BIEN QU UN SEUL TUPLE
     // CEST POUR CA QUE RIEN NE FONCTIONNE
     //PrintTuple(*black_pixels); // LA FONCTION PRINTTUPLE LE PROUVE BIEN
@@ -84,7 +84,7 @@ Uint8 HoughTransform(Matrix * mtx)
         printf("%i\n", thetaa);
         return sum/div;
     }
-/*
+
    void Put_Tuple(Tuple parr[], int x, int y, size_t len)  // FONCTIONNE BIEN A PRIORIS A REVOIR QUAND MEME !
    {
    printf("It begins there : \n");
