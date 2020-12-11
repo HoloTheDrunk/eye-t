@@ -9,7 +9,6 @@
 
 
 int WhiteLine(Matrix* matrix, int y); //1
-
 void SegmentationTest(SDL_Surface* image);//16
 
 #endif
