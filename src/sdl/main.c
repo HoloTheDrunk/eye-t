@@ -76,13 +76,13 @@ int main(int argc, char *argv[])
     BinTree* bin_lr = NewBinTree(NULL);
 
 
-    char* a = "a";
-    char* b = "b";
-    char* c = "c";
-    char* d = "d";
+    char* a = "";
+    char* b = "";
+    char* c = "l";
+    char* d = ".";
     char* e = "e";
     char* f = "f";
-    char* space = "\n";
+    char* space = " ";
 
     bin->txt = space;
 

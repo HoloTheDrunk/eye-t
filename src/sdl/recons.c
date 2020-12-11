@@ -13,6 +13,13 @@ char* Reconstruction(BinTree* bin) // Pas ouf :(
 {
     if (bin->left != NULL)
     {
+        char* left = Reconstruction(bin->left);
+        char* right = Reconstruction(bin->right);
+
+        if ((*left == 'l' && *right == '.') || (*left == '.' && *right == 'l'))
+            return "i";
+        if ((*left == 'j' && *right == '.') || (*left == '.' && *right == 'j'))
+            return "j";
         return mystrcat(mystrcat(Reconstruction(bin->left), bin->txt)
                 ,Reconstruction(bin->right));
     }
