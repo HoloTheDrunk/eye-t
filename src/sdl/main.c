@@ -38,7 +38,7 @@ gboolean on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
     UserInterface *ui = user_data;
 
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
-            "Open File", ui->window, 
+            "Open File", ui->window,
             GTK_FILE_CHOOSER_ACTION_OPEN,
             "Cancel", GTK_RESPONSE_CANCEL,
             "Open", GTK_RESPONSE_ACCEPT,
@@ -65,6 +65,26 @@ gboolean on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
     gtk_widget_destroy(dialog);
 
     return FALSE;
+}
+
+void on_manual_rotation_value_changed(GtkSpinButton *spin_button,\
+        gpointer user_data)
+{
+    UserInterface *ui = user_data;
+
+    gtk_spin_button_set_value(spin_button,\
+            (int)CLAMP(gtk_spin_button_get_value(spin_button), -180, 180));
+}
+
+void on_save_output_toggle_toggled(GtkToggleButton *togglebutton,\
+        gpointer user_data)
+{
+    UserInterface *ui = user_data;
+
+    gtk_widget_set_sensitive(\
+            GTK_WIDGET(ui->save_button),\
+            gtk_toggle_button_get_active(togglebutton)\
+            );
 }
 
 int main()
@@ -127,6 +147,10 @@ int main()
     // Connects event handlers.
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(open, "activate", G_CALLBACK(on_open_activate), &ui);
+    g_signal_connect(save_output_toggle, "toggled",\
+            G_CALLBACK(on_save_output_toggle_toggled), &ui);
+    g_signal_connect(manual_rotation, "value-changed",\
+            G_CALLBACK(on_manual_rotation_value_changed), NULL);
 
     gtk_main();
 
