@@ -26,20 +26,14 @@ struct NeuralNetwork InitializeNetwork()
 	ChangeValue(network.inputValues, 1, 3, 1);
 
 	// Initializing the expected outputs matrix.
-	network.expectedValues = CreateMatrix(4, 2);
+	network.expectedValues = CreateMatrix(4, 1);
 	InitMatrixZero(network.expectedValues);
-	ChangeValue(network.expectedValues, 0, 0, 0);
 	ChangeValue(network.expectedValues, 0, 1, 1);
 	ChangeValue(network.expectedValues, 0, 2, 1);
-	ChangeValue(network.expectedValues, 0, 3, 0);
 
 
 	// Initializing error matrix.
-	network.errors = CreateMatrix(4, 2);
-	ChangeValue(network.errors, 0, 0, 1);
-	ChangeValue(network.errors, 0, 1, 1);
-	ChangeValue(network.errors, 0, 2, 1);
-	ChangeValue(network.errors, 0, 3, 1);
+	network.errors = CreateMatrix(1, 4);
 
 	//Initializing weights, bp and fp related matrices.
 	network.weightsIH = CreateMatrix(network.nbHidden, network.nbInputs);
@@ -65,6 +59,7 @@ struct NeuralNetwork InitializeNetwork()
 	network.gradientBiasOutput = CreateMatrix(1, 1);
 	network.sumHOutputs = CreateMatrix(1, 1);
 	network.finalOutput = CreateMatrix(1, 1);
+	network.results = CreateMatrix(1, 4);
 	network.derivativeOutput = CreateMatrix(1, 1);
 
 	ChangeValue(network.biasOutput, 0, 0, Random());
@@ -85,7 +80,7 @@ struct NeuralNetwork InitializeNetwork()
 }
 
 
-void ForwardPass(struct NeuralNetwork network, int x, int y, int epoch)
+void ForwardPass(struct NeuralNetwork network, int x, int y)
 {
 	// Computations of weights and biases between input layer and
 	// hidden layer.
@@ -117,16 +112,8 @@ void ForwardPass(struct NeuralNetwork network, int x, int y, int epoch)
 			NavMatrix(network.finalOutput, 0, 0) -
 			NavMatrix(network.expectedValues, 0, y));
 
-	// Printing the results every 10000 epochs.
-	if (epoch % 10000 == 0 || epoch == 1)
-	{
-		if ((y * network.inputValues.columns + x) / 2 == 0)
-			printf("\n");
-		printf("Inputs: [%d, %d] | Output: %f\n",
-				(int)NavMatrix(network.inputValues, 0, y),
-				(int)NavMatrix(network.inputValues, 1, y),
-				NavMatrix(network.finalOutput, 0, 0));
-	}
+	ChangeValue(network.results, y, 0,\
+			NavMatrix(network.finalOutput, 0, 0));
 }
 
 void Derivative(struct NeuralNetwork network, int x)
@@ -337,55 +324,37 @@ int main(int argc, char *argv[])
 			network.toLoad = 1;
 		}
 
-	//int epochs = (network.toLoad == 1) ? 1 : 1000000;
+	//int epochs = (network.toLoad == 1) ? 4000 : 1000000;
 
 	for(int epoch = 0; epoch <= 10000; epoch++)
 	{
-		for (int x = 0; x < 2; x++)
+		if (epoch == 1 || (epoch % 1000 == 0 && epoch != 0))
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				printf("%lf\n", NavMatrix(network.results, i, 0));	
+				if (i == 3)
+					puts("\n");
+			}
+		}
+		for (int x = 0; x < 1; x++)
 		{
 			for (int y = 0; y < 4; y++)
 			{
 				if (!network.toLoad)
 				{
-					ForwardPass(network, x, y, epoch);
+					ForwardPass(network, x, y);
 					BackPropagation(network, x, y);
 				}
 				else
 				{
-					ForwardPass(network, x, y, epoch);
+					ForwardPass(network, x, y);
 					BackPropagation(network, x, y);
 				}
 			}
 		}
 	}
 
-	/*printf("Inputs: [%d, %d] | Output: %f\n",
-						(int)NavMatrix(network.inputValues, 1, 0),
-						(int)NavMatrix(network.inputValues, 1, 1),
-						NavMatrix(network.finalOutput, 0, 0));
-*/
-
-	/*printf("weights: %lf %lf \n %lf %lf\n",
-			NavMatrix(network.weightsIH, 0, 0),
-			NavMatrix(network.weightsIH, 1, 0),
-			NavMatrix(network.weightsIH, 0, 1),
-			NavMatrix(network.weightsIH, 1, 1));
-
-	printf("weights: %lf %lf \n\n", 
-			NavMatrix(network.weightsHO, 0, 0),
-			NavMatrix(network.weightsHO, 0, 1));
-	*/	
-
-	/*if (argc == 2)
-	{
-		//puts("Henlo");
-        if (argv[1][0] == '-' && argv[1][1] == 's')
-		{
-				//puts("Henlo");
-                SaveWeights(network);
-		}
-	}
-*/
 	return 0;
 }
 
