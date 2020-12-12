@@ -149,7 +149,10 @@ int SpaceValue(Matrix* matrix) // TESTED
         }
     }
     if (space_count ==  0)
+    {
         printf("SPACE VALUE\n");
+        return 0;
+    }
     return (white_pixel_count / space_count) + 1;
 }
 
