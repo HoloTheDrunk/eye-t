@@ -49,6 +49,7 @@ struct NeuralNetwork
 	struct MatrixNN derivativeOutput;
 
 	struct MatrixNN finalOutput;
+	struct MatrixNN results;
 	// MatrixNN of the output of the hidden layer (after the sum)
 	struct MatrixNN outputH;
 

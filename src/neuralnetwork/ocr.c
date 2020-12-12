@@ -147,7 +147,7 @@ void Derivative(struct NeuralNetwork network, int x)
 void GradientDescent(struct NeuralNetwork network, int y)
 {
     // Initializes the gradients for the weightsIH.
-    for (int v = 0; v < network.nbInputs; v++)
+    for (int v = 0; v * v < network.nbInputs; v++)
     {
         for (int w = 0; w < network.nbHidden; w++)
         {
