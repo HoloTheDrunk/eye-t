@@ -31,8 +31,4 @@ Matrix* ReadFileMatrix(char* filename)
 }
 
 
-int main()
-{
-    Matrix* test = ReadFileMatrix("a0.txt");
-    PrintMatrix(test);
-}
+

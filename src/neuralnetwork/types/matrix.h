@@ -9,7 +9,7 @@
 #include <SDL/SDL.h>
 #include "SDL/SDL_image.h"
 #include <err.h>
-
+#include "../toolbox.h"
 struct Matrix {
     int width; // number of rows
     int height; // number of columns
@@ -21,7 +21,7 @@ struct Matrix {
 typedef struct Matrix Matrix;
 
 
-Matrix* NewMatrix(int n_rows, int n_cols);
+Matrix* NewMatrix(int n_cols, int n_rows);
 
 void PrintMatrix(Matrix* m);
 
@@ -31,4 +31,5 @@ void SetElement(Matrix* matrix, int x, int y, int val);
 
 Matrix* ResizeMatrix(Matrix* matrix, int newHt, int newWid);
 
+struct MatrixNN ConvertToNN(Matrix* matrix);
 #endif

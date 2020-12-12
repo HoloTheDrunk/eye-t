@@ -22,6 +22,8 @@ double NavMatrix(struct MatrixNN matrix, int x, int y);
 
 void InitMatrix(struct MatrixNN matrix);
 
+void PrintMatrixNN(struct MatrixNN matrix); // Print the fucking matrix
+
 void InitMatrixZero(struct MatrixNN matrix);
 
 struct MatrixNN CreateMatrix(int rows, int colums);

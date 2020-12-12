@@ -54,3 +54,26 @@ Matrix* ResizeMatrix(Matrix* matrix, int newHt, int newWid)
     }
     return target;
 }
+
+
+typedef struct MatrixNN MatrixNN;
+
+
+struct MatrixNN ConvertToNN(Matrix* matrix)
+{
+    MatrixNN new_matrix = CreateMatrix(28,28);
+    InitMatrix(new_matrix);
+
+    int width = matrix->width;
+    int height = matrix->height;
+
+    for(int i = 0; i < width; i++)
+    {
+        for(int j = 0; j < height; j++)
+        {
+            ChangeValue(new_matrix, i, j, GetElement(matrix,i,j));
+        }
+    }
+    return new_matrix;
+}
+

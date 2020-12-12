@@ -9,5 +9,8 @@
 
 #define MAX_LINE_LENGTH 28
 
+Matrix* ReadFileMatrix(char* filename);
+
+
 #endif
 
