@@ -1,8 +1,5 @@
 #include "main.h"
 
-#include <unistd.h>
-#include <time.h>
-
 time_t start, stop;
 clock_t ticks;
 double value;

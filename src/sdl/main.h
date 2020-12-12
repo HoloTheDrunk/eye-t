@@ -11,6 +11,10 @@
 #include "segmentation.h"
 #include "flood_fill.h"
 #include "string_comparison.c"
+#include "recons.h"
+
+#include <unistd.h>
+#include <time.h>
 
 #define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
 

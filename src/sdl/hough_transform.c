@@ -1,8 +1,8 @@
-#include "hough_transform.h"
+/*#include "hough_transform.h"
 #define DEG2RAD (3.14159/180.0f)
 
 Uint8 HoughTransform(Matrix * mtx)
-{ /*CORRECT */
+{ CORRECT
     int width ;
     int height ;
     if (!(nRows(mtx, &width) && nCols(mtx, &height)))
@@ -15,6 +15,13 @@ Uint8 HoughTransform(Matrix * mtx)
     Matrix * Accumulator =
         newMatrix(Accumulator_rho_size, Accumulator_theta_size);
 
+<<<<<<< HEAD
+=======
+    //Tuple* black_pixels = BlackPixel_to_List(mtx); // A REVOIR D URGENCE CA NE FORME PAS UN ARRAY MAISS BIEN QU UN SEUL TUPLE
+    // CEST POUR CA QUE RIEN NE FONCTIONNE
+    //PrintTuple(*black_pixels); // LA FONCTION PRINTTUPLE LE PROUVE BIEN
+    //printf("SIZE OF BLACK PIXELS : %lu ", sizeof(black_pixels)/sizeof(black_pixels[0]));
+>>>>>>> origin/reconstruction
     for(int x = 1; x != mtx->width ; x++)
     {
         for(int y = 1; y != mtx->height ; y++)
@@ -72,3 +79,52 @@ Uint8 HoughTransform(Matrix * mtx)
         printf("%i\n", thetaa);
         return sum/div;
     }
+<<<<<<< HEAD
+=======
+
+   void Put_Tuple(Tuple parr[], int x, int y, size_t len)  // FONCTIONNE BIEN A PRIORIS A REVOIR QUAND MEME !
+   {
+   printf("It begins there : \n");
+   for(unsigned int i = 0; i != len ; i++)
+   {
+   if (IsTupleEmpty(parr[i]))
+   {
+   parr[i].x = x;
+   parr[i].y = y;
+   break;
+   }
+   }
+   }
+
+
+
+
+   void BlackPixel_to_List(matrix * mtx) // GROS PROBLEME !!!! SURREENT LA STRUCTURE TUPLE MAL GERE
+   {
+   Tuple *parr = malloc(mtx->rows * mtx->cols * sizeof(Uint8));
+
+   for (int i = 0; i != sizeof(parr)/sizeof(parr[0]); i++)
+   {
+   parr[i] = NewTuple();
+   } // Initializing the array of empyt tuples avoiding trash memory
+
+
+//for(int i = 0; i!= sizeof(parr)/sizeof(parr[0]) ; i++)
+//{
+//    PrintTuple(parr[i]);
+//}
+
+// INSERER CHAQUE COORD DE PIXELS NOIR
+for(int i = 1; i != mtx->rows ; i++)
+{
+for(int j = 1; j != mtx->cols ; j++)
+{
+unsigned val = -1;
+getElement(mtx,i,j, &val);
+if (val == 0)
+Put_Tuple(parr, i,j, mtx->rows * mtx->cols * sizeof(Uint8));
+}
+}
+return parr;
+}
+*/
