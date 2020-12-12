@@ -11,7 +11,7 @@ struct NeuralNetwork InitializeNetwork()
 {
 	struct NeuralNetwork network;
 
-	network.nbInputs = 28 * 28;
+	network.nbInputs = 784;
 	network.nbHidden = 20;
 	network.nbOutputs = 62;
 
@@ -34,18 +34,18 @@ struct NeuralNetwork InitializeNetwork()
 		ChangeValue(network.errors, 0, i, 1);
 
 	//Initializing weights, bp and fp related matrices.
-	network.weightsIH = CreateMatrix(network.nbInputs, network.nbHidden);
+	network.weightsIH = CreateMatrix(network.nbHidden, network.nbInputs);
 	network.weightsHO = CreateMatrix(network.nbHidden, network.nbOutputs);
 	network.outputH = CreateMatrix(1, network.nbHidden);
 	network.biasesH = CreateMatrix(1, network.nbHidden);
 	network.sumsIH = CreateMatrix(1, network.nbHidden);
 	network.derivatives = CreateMatrix(1, network.nbHidden);
-	network.previousWeightsIH = CreateMatrix(network.nbInputs,
-			network.nbHidden);
+	network.previousWeightsIH = CreateMatrix(network.nbHidden,
+			network.nbInputs);
 	network.previousWeightsHO = CreateMatrix(network.nbHidden,
 			network.nbOutputs);
 	network.previousBiasesH = CreateMatrix(1, network.nbHidden);
-	network.gradientsIH = CreateMatrix(network.nbInputs, network.nbHidden);
+	network.gradientsIH = CreateMatrix(network.nbHidden, network.nbInputs);
 	network.gradientsHO = CreateMatrix(network.nbHidden, network.nbOutputs);
 	network.gradientsBiases = CreateMatrix(1, network.nbHidden);
 
@@ -75,7 +75,6 @@ struct NeuralNetwork InitializeNetwork()
 
 	return network;
 }
-
 
 void ForwardPass(struct NeuralNetwork network, int x, int y, int epoch)
 {
@@ -149,7 +148,7 @@ void GradientDescent(struct NeuralNetwork network, int y)
 	{
 		for (int w = 0; w < network.nbHidden; w++)
 		{
-			ChangeValue(network.gradientsIH, w, v,
+			ChangeValue(network.gradientsIH, v, w,
 					Sigmoid(NavMatrix(network.inputValues,
 							v, y)) *
 					NavMatrix(network.derivatives, w, 0));
@@ -173,6 +172,7 @@ void GradientDescent(struct NeuralNetwork network, int y)
 				Sigmoid(NavMatrix(network.outputH, v, 0)) *
 				NavMatrix(network.derivativeOutput, 0, 0));
 	}
+
 }
 
 void UpdateWeights(struct NeuralNetwork network)
@@ -182,15 +182,15 @@ void UpdateWeights(struct NeuralNetwork network)
 	{
 		for (int w = 0; w < network.nbInputs; w++)
 		{
-			ChangeValue(network.previousWeightsIH, v, w,
+			ChangeValue(network.previousWeightsIH, w, v,
 					(network.learningRate *
 					 NavMatrix(network.gradientsIH, w, v)) +
 					(network.constante *
-					 NavMatrix(network.previousWeightsIH, v, w)));
+					 NavMatrix(network.previousWeightsIH, w, v)));
 
-			ChangeValue(network.weightsIH, v, w,
+			ChangeValue(network.weightsIH, w, v,
 					(NavMatrix(network.weightsIH, w, v) +
-					 NavMatrix(network.previousWeightsIH, v, w)));
+					 NavMatrix(network.previousWeightsIH, w, v)));
 		}
 	}
 
@@ -230,7 +230,9 @@ void UpdateWeights(struct NeuralNetwork network)
 			 NavMatrix(network.previousOutputBias, 0, 0)));
 	ChangeValue(network.biasOutput, 0, 0, NavMatrix(network.biasOutput, 0, 0)
 			+ NavMatrix(network.previousOutputBias, 0, 0));
+
 }
+
 
 // BackPropagation updates the weights according to expected outputs
 // and error value gotten at the last train.
