@@ -1,5 +1,33 @@
 #include "main.h"
 
+#include <unistd.h>
+#include <time.h>
+
+time_t start, stop;
+clock_t ticks;
+double value;
+
+SDL_Surface* Resize(SDL_Surface *img)
+{
+    SDL_Surface *dest = SDL_CreateRGBSurface(SDL_HWSURFACE,28,28,img->format->BitsPerPixel,0,0,0,0);
+    SDL_SoftStretch(img, NULL, dest, NULL);
+    return dest;
+}
+
+
+SDL_Surface* redImage(int w,int h,SDL_Surface* src)
+{
+    SDL_Surface* ret = SDL_CreateRGBSurface(src->flags,w,h,src->format->BitsPerPixel,
+            src->format->Rmask,src->format->Gmask,src->format->Bmask,src->format->Amask);
+    if (!ret)
+        return src;
+    SDL_BlitSurface(src,NULL,ret,NULL);
+    SDL_FreeSurface(src);
+    SDL_Surface* surface = SDL_DisplayFormatAlpha(ret);
+    SDL_FreeSurface(ret);
+    return surface;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -94,46 +122,39 @@ int main(int argc, char *argv[])
             }
         }
 
-        /*if(compare_strings(argv[i], "--dothething") == 1)
-        {
-            if(i < argc-1)
-            {
-                image_surface = load_image(argv[i+1]);
-                // Otsu (-v)
-                greyscale(image_surface);
-                image_surface = Otsu_method(image_surface, 0);
-                // Clean (-c)
-                fill_edges(image_surface, 0, 255);
-                // Auto-rotate (-r)
-                image_surface = Otsu_method(image_surface, 255);
-                image_surface = auto_rotate(image_surface);
-                image_surface = Otsu_method(image_surface, 0);
-                // Gaussian blur (-b)
-                image_surface = convolute(image_surface, gaussian_blur,
-                        ARRAYLEN(gaussian_blur));
-                fill_edges(image_surface, 0, 255);
-                i++;
-            }
-            else
-                errx(0, "--dothething: Incorrect usage, check man.");
-        }
-        if(compare_strings(argv[i], "--finishthething") == 1)
-        {
-            if(image_surface != NULL)
-            {
-                SegmentationTest(image_surface);
-                save_image(image_surface, "eye_t.bmp");
-                wait_for_keypressed();
-            }
-            else
-                errx(0, "--finishthething Incorrect usage, check man.");
-        }*/
     }
+    image_surface = load_image(argv[1]);
 
-    if(image_surface != NULL)
-        SDL_FreeSurface(image_surface);
-    if(screen_surface != NULL)
-        SDL_FreeSurface(screen_surface);
+    image_surface = Otsu_method(image_surface,0);
+    //image_surface = auto_rotate(image_surface);
+
+    //matrix * test = image_to_matrix(image_surface, image_surface->w, image_surface->h);
+    //Bounds_Detector(image_surface, image_surface->h, image_surface->w);
+    //auto_rotate(image_surface);
+    //Uint8 value = HoughTransform(test);
+
+    //printf("WIDTH : %i  HEIGHT : %i \n", image_surface->w, image_surface->h);
+    //printf("THE CORRECT VALUE : %i", value);
+    //printMatrix(test);
+    //
+    screen_surface = display_image(image_surface);
+    //screen_surface = display_image(auto_rotate(image_surface));
+
+    /*image_surface = convolute(image_surface, gaussian_blur,
+                ARRAYLEN(gaussian_blur));
+    *image_surface = convolute(image_surface, edge_detection,
+                ARRAYLEN(edge_detection));*/
+
+    SegmentationTest(image_surface);
+
+    //screen_surface = display_image(image_surface);
+
+    save_image(image_surface, "eye_t.bmp");
+
+    wait_for_keypressed();
+
+    SDL_FreeSurface(image_surface);
+    SDL_FreeSurface(screen_surface);
 
     return 0;
 }

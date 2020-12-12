@@ -150,7 +150,10 @@ int SpaceValue(Matrix* matrix) // TESTED
         }
     }
     if (space_count ==  0)
+    {
         printf("SPACE VALUE\n");
+        return 0;
+    }
     return (white_pixel_count / space_count) + 1;
 }
 
@@ -377,9 +380,12 @@ BinTree* Segmentation(SDL_Surface* image) //16
 
 }
 
-
-
 void  SegmentationTest(SDL_Surface* image)
 {
-    MatBT_Print(Segmentation(image));
+
+    BinTree* bintree = Segmentation(image);
+    Resize_Leaves(bintree,28,28);
+    MatBT_Print(bintree);
+    //Matrix* Test = NewMatrix(10,10);
+    //PrintMatrix(ResizeMatrix(Test, 5 ,5));
 }
