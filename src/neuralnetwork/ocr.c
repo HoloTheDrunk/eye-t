@@ -83,7 +83,7 @@ void ForwardPass(struct NeuralNetwork network, int x, int y, int epoch)
 	for (int v = 0; v < network.nbHidden; v++)
 	{
 		double SumIH = 0;
-		for (int w = 0; w < network.nbInputs; w++)
+		for (int w = 0; w * w < network.nbInputs; w++)
 		{
 			SumIH += NavMatrix(network.weightsIH, w, v) *
 				NavMatrix(network.inputValues, w, y);
@@ -144,7 +144,7 @@ void Derivative(struct NeuralNetwork network, int x)
 void GradientDescent(struct NeuralNetwork network, int y)
 {
 	// Initializes the gradients for the weightsIH.
-	for (int v = 0; v < network.nbInputs; v++)
+	for (int v = 0; v * v < network.nbInputs; v++)
 	{
 		for (int w = 0; w < network.nbHidden; w++)
 		{
@@ -180,7 +180,7 @@ void UpdateWeights(struct NeuralNetwork network)
 	// Updating weights between input and hidden layers.
 	for (int v = 0; v < network.nbHidden; v++)
 	{
-		for (int w = 0; w < network.nbInputs; w++)
+		for (int w = 0; w * w < network.nbInputs; w++)
 		{
 			ChangeValue(network.previousWeightsIH, w, v,
 					(network.learningRate *
@@ -333,9 +333,9 @@ int main(int argc, char *argv[])
 
 	for(int epoch = 0; epoch <= 10000; epoch++)
 	{
-		for (int x = 0; x < 2; x++)
+		for (int x = 0; x < 28; x++)
 		{
-			for (int y = 0; y < 4; y++)
+			for (int y = 0; y < 28; y++)
 			{
 				if (!network.toLoad)
 				{
