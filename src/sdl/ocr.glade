@@ -9,11 +9,16 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkTextBuffer" id="output_text"/>
+  <object class="GtkImage" id="save_icon">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">document-save-as-symbolic</property>
+  </object>
   <object class="GtkWindow" id="org.gtk.ocr">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="default_width">720</property>
-    <property name="default_height">480</property>
+    <property name="default_width">1024</property>
+    <property name="default_height">576</property>
     <child>
       <object class="GtkPaned">
         <property name="visible">True</property>
@@ -80,19 +85,24 @@
         </child>
         <child>
           <object class="GtkPaned" id="main_area">
+            <property name="width_request">720</property>
+            <property name="height_request">360</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="position">360</property>
+            <property name="position">400</property>
             <child>
               <object class="GtkImage" id="input_image">
+                <property name="width_request">360</property>
+                <property name="height_request">360</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="icon_name">insert-image</property>
                 <property name="icon_size">6</property>
+                <signal name="configure-event" handler="on_input_image_configure_event" swapped="no"/>
               </object>
               <packing>
-                <property name="resize">True</property>
-                <property name="shrink">False</property>
+                <property name="resize">False</property>
+                <property name="shrink">True</property>
               </packing>
             </child>
             <child>
@@ -102,12 +112,12 @@
                 <property name="orientation">vertical</property>
                 <property name="position">100</property>
                 <child>
-                  <object class="GtkPaned" id="options">
+                  <object class="GtkPaned" id="active_area">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="position">128</property>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkBox" id="options_area">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
@@ -130,7 +140,7 @@
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="spellcheck_toggle">
-                            <property name="label" translatable="yes">Spelling check</property>
+                            <property name="label" translatable="yes">Spellcheck output</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -144,48 +154,77 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="manual_rotation">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="max_length">4</property>
-                            <property name="max_width_chars">3</property>
-                            <property name="shadow_type">out</property>
-                            <property name="placeholder_text" translatable="yes">Manual rotation</property>
-                            <property name="input_purpose">number</property>
-                            <property name="adjustment">manual_rotation_adjustment</property>
-                            <property name="climb_rate">1</property>
-                            <property name="numeric">True</property>
-                            <signal name="value-changed" handler="on_manual_rotation_value_changed" swapped="no"/>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkCheckButton" id="manual_rotation_toggle">
+                                <property name="label" translatable="yes">Manual rotation</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_manual_rotation_toggle_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="manual_rotation_amount">
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="max_length">4</property>
+                                <property name="max_width_chars">3</property>
+                                <property name="shadow_type">out</property>
+                                <property name="placeholder_text" translatable="yes">Manual rotation</property>
+                                <property name="input_purpose">number</property>
+                                <property name="adjustment">manual_rotation_adjustment</property>
+                                <property name="climb_rate">1</property>
+                                <property name="numeric">True</property>
+                                <signal name="value-changed" handler="on_manual_rotation_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
+                            <property name="fill">False</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="resize">True</property>
+                        <property name="resize">False</property>
                         <property name="shrink">False</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkPaned">
+                      <object class="GtkPaned" id="output_area">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="orientation">vertical</property>
                         <property name="position">55</property>
                         <child>
-                          <object class="GtkFileChooserButton" id="save_button">
+                          <object class="GtkButton" id="save_button">
+                            <property name="label" translatable="yes">Choose save location</property>
                             <property name="visible">True</property>
-                            <property name="sensitive">False</property>
-                            <property name="can_focus">False</property>
-                            <property name="action">save</property>
-                            <property name="title" translatable="yes">Choose a save location</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="image">save_icon</property>
+                            <property name="always_show_image">True</property>
+                            <signal name="activate" handler="on_save_button_activate" swapped="no"/>
                           </object>
                           <packing>
-                            <property name="resize">True</property>
-                            <property name="shrink">False</property>
+                            <property name="resize">False</property>
+                            <property name="shrink">True</property>
                           </packing>
                         </child>
                         <child>
@@ -217,6 +256,7 @@
                   <object class="GtkTextView">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="editable">False</property>
                     <property name="wrap_mode">word</property>
                     <property name="left_margin">4</property>
                     <property name="top_margin">2</property>

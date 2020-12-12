@@ -1,6 +1,8 @@
 #include "main.h"
 #include <gtk/gtk.h>
 
+#define UNUSED(x) (void)(x)
+
 typedef struct BannerMenu
 {
     GtkMenuBar *menu;
@@ -16,25 +18,31 @@ typedef struct UserInterface
     // Top menu
     BannerMenu banner_menu;
 
-    // Images
+    // Input image
     GtkImage *input_image;
 
-    // Buttons
+    // Buttons /////////////////////////////
+    //// Options
     GtkCheckButton *save_output_toggle;
     GtkCheckButton *spellcheck_toggle;
-    GtkSpinButton *manual_rotation;
-    GtkFileChooserButton *save_button;
+    GtkCheckButton *manual_rotation_toggle;
+    GtkSpinButton *manual_rotation_amount;
+
+    //// Output
+    GtkButton *save_button;
     GtkButton *output_button;
+    ////////////////////////////////////////
+
+    // Input
+    GtkFileFilter *file_filter;
+
+    // Output
+    GtkTextBuffer *output_text;
 } UserInterface;
 
-gboolean on_input_image_button_release_event(UserInterface *ui)
+void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-    g_print("coucou sale %p\n", ui);
-    return FALSE;
-}
-
-gboolean on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
+    UNUSED(menuitem);
     UserInterface *ui = user_data;
 
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
@@ -49,31 +57,103 @@ gboolean on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
     {
         case GTK_RESPONSE_ACCEPT:
             filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-            g_print("Loading file %s to image %p\n", filename, ui->input_image);
             gtk_image_set_from_file(ui->input_image, filename);
-            break;
-        case GTK_RESPONSE_CANCEL:
-            g_print("cancelled\n");
+
+            // Resize image to fit
+            const GdkPixbuf *pb =
+                gtk_image_get_pixbuf(GTK_IMAGE(ui->input_image));
+            const int imgW = gdk_pixbuf_get_width(pb);
+            const int imgH = gdk_pixbuf_get_height(pb);
+
+            double ratio;
+            int destW;
+            int destH;
+
+            if(imgW > imgH)
+                ratio = 360 / (double)imgW;
+            else
+                ratio = 360 / (double)imgH;
+
+            destW = ratio * imgW;
+            destH = ratio * imgH;
+
+            GdkPixbuf *result = 
+                gdk_pixbuf_scale_simple(pb, destW, destH, GDK_INTERP_BILINEAR);
+
+            gtk_image_set_from_pixbuf(ui->input_image, result);
+
             break;
         default:
-            g_print("fck u\n");
             break;
     }
 
-    g_print("coucou %p\n", ui->input_image);
-
     gtk_widget_destroy(dialog);
-
-    return FALSE;
 }
 
-void on_manual_rotation_value_changed(GtkSpinButton *spin_button,\
+void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+    UNUSED(menuitem);
+    UNUSED(user_data);
+
+    GdkPixbuf *logo =
+        gdk_pixbuf_new_from_file("./resources/logo.png", NULL);
+    gtk_show_about_dialog(\
+            NULL,\
+            "program-name", "Eye-T",\
+            "logo", logo,\
+            "title", "About Eye-T",\
+            NULL);
+}
+
+void on_save_button_activate(GtkButton *button, gpointer user_data)
+{
+    UserInterface *ui = user_data;
+
+    GtkWidget *dialog = gtk_file_chooser_dialog_new(
+            "Select File", ui->window,
+            GTK_FILE_CHOOSER_ACTION_SAVE,
+            "Cancel", GTK_RESPONSE_CANCEL,
+            "Select", GTK_RESPONSE_ACCEPT,
+            NULL);
+
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+
+    gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+
+    gtk_file_chooser_set_current_name(chooser, "OCR_output");
+
+    const char *filename;
+    switch(gtk_dialog_run(GTK_DIALOG(dialog)))
+    {
+        case GTK_RESPONSE_ACCEPT:
+            filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+            gtk_button_set_label(button, filename);
+            break;
+        default:
+            break;
+    }
+
+    gtk_widget_destroy(dialog);
+}
+
+void on_manual_rotation_amount_value_changed(GtkSpinButton *spin_button,\
+        gpointer user_data)
+{
+    UNUSED(user_data);
+
+    gtk_spin_button_set_value(spin_button,\
+            (int)CLAMP(gtk_spin_button_get_value(spin_button), -180, 180));
+}
+
+void on_manual_rotation_toggle_toggled(GtkToggleButton *togglebutton,\
         gpointer user_data)
 {
     UserInterface *ui = user_data;
 
-    gtk_spin_button_set_value(spin_button,\
-            (int)CLAMP(gtk_spin_button_get_value(spin_button), -180, 180));
+    gtk_widget_set_sensitive(\
+            GTK_WIDGET(ui->manual_rotation_amount),\
+            gtk_toggle_button_get_active(togglebutton)\
+            );
 }
 
 void on_save_output_toggle_toggled(GtkToggleButton *togglebutton,\
@@ -104,53 +184,113 @@ int main()
         return 1;
     }
 
+    // Main top-level window
     GtkWindow *window =
         GTK_WINDOW(gtk_builder_get_object(builder, "org.gtk.ocr"));
-    // GtkFileChooserDialog *file_chooser =
+
+    // Top menu
     GtkMenuBar *menu =
         GTK_MENU_BAR(gtk_builder_get_object(builder, "menu"));
-    GtkMenuItem *open =
-        GTK_MENU_ITEM(gtk_builder_get_object(builder, "open"));
+
+    // Input image
     GtkImage *input_image =
         GTK_IMAGE(gtk_builder_get_object(builder, "input_image"));
+
+    // Input
+    GtkFileFilter *file_filter = gtk_file_filter_new();
+    gtk_file_filter_add_pixbuf_formats(file_filter);
+
+    // Buttons
+    //// Input
+    GtkMenuItem *open =
+        GTK_MENU_ITEM(gtk_builder_get_object(builder, "open"));
+
+    //// Options
     GtkCheckButton *save_output_toggle =
         GTK_CHECK_BUTTON(gtk_builder_get_object(builder, "save_output_toggle"));
     GtkCheckButton *spellcheck_toggle =
         GTK_CHECK_BUTTON(gtk_builder_get_object(builder, "spellcheck_toggle"));
-    GtkSpinButton *manual_rotation =
-        GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "manual_rotation"));
-    gtk_spin_button_set_range(manual_rotation, -180, 180);
-    GtkFileChooserButton *save_button =
-        GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "save_button"));
+    GtkCheckButton *manual_rotation_toggle =
+        GTK_CHECK_BUTTON(\
+                gtk_builder_get_object(\
+                    builder,\
+                    "manual_rotation_toggle"));
+    GtkSpinButton *manual_rotation_amount =
+        GTK_SPIN_BUTTON(\
+                gtk_builder_get_object(\
+                    builder,\
+                    "manual_rotation_amount"));
+
+    //// Output
+    GtkButton *save_button =
+        GTK_BUTTON(gtk_builder_get_object(builder, "save_button"));
     GtkButton *output_button =
-        GTK_BUTTON(gtk_builder_get_object(builder, "manual_rotation"));
+        GTK_BUTTON(gtk_builder_get_object(builder, "manual_rotation_amount"));
+
+    // Annex
+    GtkMenuItem *about =
+        GTK_MENU_ITEM(gtk_builder_get_object(builder, "about"));
+
+    // Output
+    GtkTextBuffer *output_text =
+        GTK_TEXT_BUFFER(gtk_builder_get_object(builder, "output_text"));
 
     UserInterface ui =
     {
+        // Main top-level window
         .window = window,
 
+        // Top menu
         .banner_menu =
         {
             .menu = menu,
             .open = open,
+            .about = about,
         },
 
+        // Input image
         .input_image = input_image,
 
+        // Buttons
+        //// Options
         .save_output_toggle = save_output_toggle,
         .spellcheck_toggle = spellcheck_toggle,
-        .manual_rotation = manual_rotation,
+        .manual_rotation_toggle = manual_rotation_toggle,
+        .manual_rotation_amount = manual_rotation_amount,
+
+        //// Output
         .save_button = save_button,
         .output_button = output_button,
+
+        // Input
+        .file_filter = file_filter,
+
+        // Output
+        .output_text = output_text,
     };
 
-    // Connects event handlers.
+    // Connects event handlers ////////////////////////////////////////////////
+    //// Top-level window
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    //// Menu
     g_signal_connect(open, "activate", G_CALLBACK(on_open_activate), &ui);
+    g_signal_connect(about, "activate", G_CALLBACK(on_about_activate), &ui);
+
+    //// Options
+    ////// Output
     g_signal_connect(save_output_toggle, "toggled",\
             G_CALLBACK(on_save_output_toggle_toggled), &ui);
-    g_signal_connect(manual_rotation, "value-changed",\
-            G_CALLBACK(on_manual_rotation_value_changed), NULL);
+    g_signal_connect(save_button, "activate",\
+            G_CALLBACK(on_save_button_activate), &ui);
+
+    ////// Manual Rotation
+    g_signal_connect(manual_rotation_toggle, "toggled",\
+            G_CALLBACK(on_manual_rotation_toggle_toggled), &ui);
+    g_signal_connect(manual_rotation_amount, "value-changed",\
+            G_CALLBACK(on_manual_rotation_amount_value_changed), NULL);
+
+    ///////////////////////////////////////////////////////////////////////////
 
     gtk_main();
 
