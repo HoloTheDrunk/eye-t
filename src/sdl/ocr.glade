@@ -216,11 +216,12 @@
                           <object class="GtkButton" id="save_button">
                             <property name="label" translatable="yes">Choose save location</property>
                             <property name="visible">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">save_icon</property>
                             <property name="always_show_image">True</property>
-                            <signal name="activate" handler="on_save_button_activate" swapped="no"/>
+                            <signal name="clicked" handler="on_save_button_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="resize">False</property>
@@ -233,7 +234,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="activate" handler="on_output_button_activate" swapped="no"/>
+                            <signal name="clicked" handler="on_output_button_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="resize">True</property>

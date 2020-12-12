@@ -105,20 +105,21 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
             NULL);
 }
 
-void on_save_button_activate(GtkButton *button, gpointer user_data)
+void on_save_button_clicked(GtkButton *button, gpointer user_data)
 {
     UserInterface *ui = user_data;
 
+    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
-            "Select File", ui->window,
-            GTK_FILE_CHOOSER_ACTION_SAVE,
+            "Select File", ui->window, action,
             "Cancel", GTK_RESPONSE_CANCEL,
             "Select", GTK_RESPONSE_ACCEPT,
             NULL);
 
     GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
 
-    gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+    gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 
     gtk_file_chooser_set_current_name(chooser, "OCR_output");
 
@@ -127,6 +128,7 @@ void on_save_button_activate(GtkButton *button, gpointer user_data)
     {
         case GTK_RESPONSE_ACCEPT:
             filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
             gtk_button_set_label(button, filename);
             break;
         default:
@@ -165,6 +167,37 @@ void on_save_output_toggle_toggled(GtkToggleButton *togglebutton,\
             GTK_WIDGET(ui->save_button),\
             gtk_toggle_button_get_active(togglebutton)\
             );
+}
+
+void save_output(UserInterface *ui)
+{
+    const char *filename = gtk_button_get_label(ui->save_button);
+    FILE *fptr = fopen(filename, "w+");
+
+    GtkTextIter start;
+    GtkTextIter end;
+    gtk_text_buffer_get_bounds(ui->output_text, &start, &end);
+
+    gchar *text = 
+        gtk_text_buffer_get_text(ui->output_text, &start, &end, FALSE);
+
+    fprintf(fptr, text);
+
+    fclose(fptr);
+}
+
+void on_output_button_clicked(GtkButton *button, gpointer user_data)
+{
+    UNUSED(button);
+    UserInterface *ui = user_data;
+
+    // Call OCR and build detected null-terminated text, then output
+    // gtk_text_buffer_set_text(ui->output_text, [TEXT], -1);
+
+    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ui->save_output_toggle)))
+    {
+        save_output(ui);
+    }
 }
 
 int main()
@@ -225,7 +258,7 @@ int main()
     GtkButton *save_button =
         GTK_BUTTON(gtk_builder_get_object(builder, "save_button"));
     GtkButton *output_button =
-        GTK_BUTTON(gtk_builder_get_object(builder, "manual_rotation_amount"));
+        GTK_BUTTON(gtk_builder_get_object(builder, "output_button"));
 
     // Annex
     GtkMenuItem *about =
@@ -281,8 +314,10 @@ int main()
     ////// Output
     g_signal_connect(save_output_toggle, "toggled",\
             G_CALLBACK(on_save_output_toggle_toggled), &ui);
-    g_signal_connect(save_button, "activate",\
-            G_CALLBACK(on_save_button_activate), &ui);
+    g_signal_connect(save_button, "clicked",\
+            G_CALLBACK(on_save_button_clicked), &ui);
+    g_signal_connect(output_button, "clicked",\
+            G_CALLBACK(on_output_button_clicked), &ui);
 
     ////// Manual Rotation
     g_signal_connect(manual_rotation_toggle, "toggled",\
