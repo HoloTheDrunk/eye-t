@@ -95,13 +95,22 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
     UNUSED(menuitem);
     UNUSED(user_data);
 
+    char *authors[] = {"Yassine DAMIRI <yassine.damiri@epita.fr>",\
+        "Victor-Emmanuel PROVOST <victor-emmanuel.provost@epita.fr>",\
+            "Raphaël DUHEN <raphael.duhen@epita.fr>",\
+            "Param DAVE <param.dave@epita.fr>"};
+
     GdkPixbuf *logo =
-        gdk_pixbuf_new_from_file("./resources/logo.png", NULL);
+        gdk_pixbuf_new_from_file("./resources/logo_small.png", NULL);
     gtk_show_about_dialog(\
             NULL,\
             "program-name", "Eye-T",\
             "logo", logo,\
             "title", "About Eye-T",\
+            "comments", "Onii-san is watching you.",
+            "version", "1.0.0",
+            "license-type", GTK_LICENSE_MIT_X11,
+            "authors", authors,
             NULL);
 }
 
