@@ -46,7 +46,7 @@ typedef struct UserInterface
 
 SDL_Surface* Resize(SDL_Surface *img)
 {
-    SDL_Surface *dest = 
+    SDL_Surface *dest =
         SDL_CreateRGBSurface(SDL_HWSURFACE,28,28,img->format->BitsPerPixel,\
                 0,0,0,0);
     SDL_SoftStretch(img, NULL, dest, NULL);
@@ -80,6 +80,10 @@ void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
             "Cancel", GTK_RESPONSE_CANCEL,
             "Open", GTK_RESPONSE_ACCEPT,
             NULL);
+    GtkFileFilter *filter = gtk_file_filter_new();
+    gtk_file_filter_add_pixbuf_formats(filter);
+    gtk_file_filter_set_name(filter, "Images (.png/.jpg/.jpeg/etc...)");
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 
     const char *filename;
     switch(gtk_dialog_run(GTK_DIALOG(dialog)))
@@ -106,7 +110,7 @@ void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
             destW = ratio * imgW;
             destH = ratio * imgH;
 
-            GdkPixbuf *result = 
+            GdkPixbuf *result =
                 gdk_pixbuf_scale_simple(pb, destW, destH, GDK_INTERP_BILINEAR);
 
             gtk_image_set_from_pixbuf(ui->input_image, result);
@@ -210,18 +214,37 @@ void on_save_output_toggle_toggled(GtkToggleButton *togglebutton,\
 void save_output(UserInterface *ui)
 {
     const char *filename = gtk_button_get_label(ui->save_button);
-    FILE *fptr = fopen(filename, "w+");
+    if(!gtk_widget_get_sensitive(GTK_WIDGET(ui->save_button))
+            || strcmp(filename, "Choose save location"))
+    {
+        FILE *fptr = fopen(filename, "w+");
 
-    GtkTextIter start;
-    GtkTextIter end;
-    gtk_text_buffer_get_bounds(ui->output_text, &start, &end);
+        GtkTextIter start;
+        GtkTextIter end;
+        gtk_text_buffer_get_bounds(ui->output_text, &start, &end);
 
-    gchar *text = 
-        gtk_text_buffer_get_text(ui->output_text, &start, &end, FALSE);
+        gchar *text =
+            gtk_text_buffer_get_text(ui->output_text, &start, &end, FALSE);
 
-    fprintf(fptr, text);
+        fprintf(fptr, text);
 
-    fclose(fptr);
+        fclose(fptr);
+    }
+    else
+    {
+        GtkMessageDialog *dialog =
+            GTK_MESSAGE_DIALOG(gtk_message_dialog_new_with_markup(\
+                        ui->window,\
+                        GTK_DIALOG_DESTROY_WITH_PARENT,\
+                        GTK_MESSAGE_ERROR,\
+                        GTK_BUTTONS_CLOSE,\
+                        "<b>Please select a valid save location</b>"\
+                        "<b> or disable saving.</b>"));
+
+        gtk_dialog_run(GTK_DIALOG(dialog));
+
+        gtk_widget_destroy(GTK_WIDGET(dialog));
+    }
 }
 
 void on_output_button_clicked(GtkButton *button, gpointer user_data)
