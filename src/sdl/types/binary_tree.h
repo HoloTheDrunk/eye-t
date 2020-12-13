@@ -28,4 +28,6 @@ void MatBT_Print(BinTree* MatBT);
 // Print a bintree recursevly
 void Resize_Leaves(BinTree* bin, int width, int height);
 // Resize in place all the leaves by width*height
+void PrintTree(BinTree* curr,int depth);
+// Print the BinTree
 #endif
