@@ -14,6 +14,7 @@
     <property name="can_focus">False</property>
     <property name="icon_name">document-save-as-symbolic</property>
   </object>
+  <object class="GtkTextBuffer" id="tree_output_text"/>
   <object class="GtkWindow" id="org.gtk.ocr">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -100,17 +101,27 @@
                     <property name="can_focus">True</property>
                     <property name="position">400</property>
                     <child>
-                      <object class="GtkImage" id="input_image">
+                      <object class="GtkEventBox" id="input_image_event_box">
                         <property name="width_request">360</property>
                         <property name="height_request">360</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">insert-image</property>
-                        <property name="icon_size">6</property>
-                        <signal name="configure-event" handler="on_input_image_configure_event" swapped="no"/>
+                        <property name="above_child">True</property>
+                        <signal name="button-press-event" handler="on_input_image_event_box_button_press_event" swapped="no"/>
+                        <child>
+                          <object class="GtkImage" id="input_image">
+                            <property name="width_request">360</property>
+                            <property name="height_request">360</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">insert-image</property>
+                            <property name="icon_size">6</property>
+                            <signal name="configure-event" handler="on_input_image_configure_event" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
                       <packing>
-                        <property name="resize">False</property>
+                        <property name="resize">True</property>
                         <property name="shrink">False</property>
                       </packing>
                     </child>
@@ -279,7 +290,9 @@
                                 <property name="editable">False</property>
                                 <property name="wrap_mode">word</property>
                                 <property name="left_margin">4</property>
-                                <property name="top_margin">2</property>
+                                <property name="right_margin">4</property>
+                                <property name="top_margin">4</property>
+                                <property name="bottom_margin">4</property>
                                 <property name="buffer">output_text</property>
                               </object>
                             </child>
@@ -464,6 +477,12 @@
                 <property name="margin_end">10</property>
                 <property name="margin_top">5</property>
                 <property name="margin_bottom">10</property>
+                <property name="editable">False</property>
+                <property name="left_margin">4</property>
+                <property name="right_margin">4</property>
+                <property name="top_margin">4</property>
+                <property name="bottom_margin">4</property>
+                <property name="buffer">tree_output_text</property>
                 <property name="monospace">True</property>
               </object>
             </child>

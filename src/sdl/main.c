@@ -7,6 +7,10 @@ time_t start, stop;
 clock_t ticks;
 double value;
 
+typedef struct ProcessingImages
+{
+} ProcessingImages;
+
 typedef struct BannerMenu
 {
     GtkMenuBar *menu;
@@ -23,6 +27,7 @@ typedef struct UserInterface
     BannerMenu banner_menu;
 
     // Input image
+    GtkEventBox *input_image_event_box;
     GtkImage *input_image;
 
     // Buttons /////////////////////////////
@@ -42,6 +47,8 @@ typedef struct UserInterface
 
     // Output
     GtkTextBuffer *output_text;
+    GtkTextBuffer *output_tree_text;
+    GtkImage *processing_images[6];
 } UserInterface;
 
 SDL_Surface* Resize(SDL_Surface *img)
@@ -69,11 +76,8 @@ SDL_Surface* redImage(int w,int h,SDL_Surface* src)
     return surface;
 }
 
-void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
+void run_file_opener(UserInterface *ui)
 {
-    UNUSED(menuitem);
-    UserInterface *ui = user_data;
-
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
             "Open File", ui->window,
             GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -121,6 +125,26 @@ void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
     }
 
     gtk_widget_destroy(dialog);
+}
+
+void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+    UNUSED(menuitem);
+    UserInterface *ui = user_data;
+
+    run_file_opener(ui);
+}
+
+gboolean on_input_image_event_box_button_press_event(GtkWidget *widget,\
+        GdkEvent *event, gpointer user_data)
+{
+    UNUSED(widget);
+    UNUSED(event);
+    UserInterface *ui = user_data;
+
+    run_file_opener(ui);
+
+    return TRUE;
 }
 
 void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
@@ -287,6 +311,8 @@ int main()
         GTK_MENU_BAR(gtk_builder_get_object(builder, "menu"));
 
     // Input image
+    GtkEventBox *input_image_event_box =
+        GTK_EVENT_BOX(gtk_builder_get_object(builder, "input_image_event_box"));
     GtkImage *input_image =
         GTK_IMAGE(gtk_builder_get_object(builder, "input_image"));
 
@@ -329,10 +355,6 @@ int main()
     GtkTextBuffer *output_text =
         GTK_TEXT_BUFFER(gtk_builder_get_object(builder, "output_text"));
 
-    // Processing steps
-    //GtkBox *processing_steps =
-    //    GTK_BOX(gtk_builder_get_object(builder, "processing_steps"));
-
     UserInterface ui =
     {
         // Main top-level window
@@ -347,6 +369,7 @@ int main()
         },
 
         // Input image
+        .input_image_event_box = input_image_event_box,
         .input_image = input_image,
 
         // Buttons
@@ -371,9 +394,13 @@ int main()
     //// Top-level window
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    //// Menu
+    //// Top Menu
     g_signal_connect(open, "activate", G_CALLBACK(on_open_activate), &ui);
     g_signal_connect(about, "activate", G_CALLBACK(on_about_activate), &ui);
+
+    //// Input image
+    g_signal_connect(GTK_WIDGET(input_image_event_box), "button-press-event",\
+            G_CALLBACK(on_input_image_event_box_button_press_event), &ui);
 
     //// Options
     ////// Output
