@@ -329,6 +329,10 @@ int main()
     GtkTextBuffer *output_text =
         GTK_TEXT_BUFFER(gtk_builder_get_object(builder, "output_text"));
 
+    // Processing steps
+    //GtkBox *processing_steps =
+    //    GTK_BOX(gtk_builder_get_object(builder, "processing_steps"));
+
     UserInterface ui =
     {
         // Main top-level window
