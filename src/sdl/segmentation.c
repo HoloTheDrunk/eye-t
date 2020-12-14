@@ -325,7 +325,7 @@ BinTree* SegmentationRec(BinTree* bintree)//17
 {
     Matrix* originalmatrix = bintree->key;
     Matrix* matrix = ClearBounds(originalmatrix);
-    if (IsLetter(originalmatrix))
+    if (IsLetter(matrix))
     {
         return bintree;
     }
@@ -352,8 +352,6 @@ BinTree* SegmentationRec(BinTree* bintree)//17
         }
         bintree->left = NewBinTree(ClearBounds(leftmatrix));
         bintree->right = NewBinTree(ClearBounds(rightmatrix));
-        //MatBT_Print(bintree->right);
-        //MatBT_Print(bintree->left);
         SegmentationRec(bintree->left);
         SegmentationRec(bintree->right);
 

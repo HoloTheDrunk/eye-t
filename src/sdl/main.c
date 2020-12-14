@@ -6,6 +6,8 @@
 #include "autorotate.h"
 #include "types/binary_tree.h"
 #include "segmentation.h"
+#include "recons.h"
+#include "../neuralnetwork/NeuralNetwork.h"
 #define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
 
 #include <unistd.h>
@@ -42,25 +44,19 @@ int main(int argc, char *argv[])
     {
         errx(0, "A file has to be specified.");
     }
+    Network net;
+
+    InitNetwork(&net,784);
+    AddLayer(&net,100);
+    AddLayer(&net,127);
+
+    TrainNN(&net);
+
 
     SDL_Surface* image_surface;
     SDL_Surface* screen_surface;
 
     init_sdl();
-
-
-    // IMAGE TREATMENT
-
-    /*float gaussian_blur[] = {
-        .0625, .125, .0625,
-         .125,  .25,  .125,
-        .0625, .125, .0625
-    };
-    *float edge_detection[] = {
-        -1,-1,-1,
-        -1, 8,-1,
-        -1,-1,-1
-    };*/
 
     image_surface = load_image(argv[1]);
 
@@ -91,11 +87,15 @@ int main(int argc, char *argv[])
 
     save_image(image_surface, "eye_t.bmp");
 
+    LeavesToChar(bintree, &net);
+
+    printf("%s \n", Reconstruction(bintree));
+
     wait_for_keypressed();
 
+    freeall(&net);
     SDL_FreeSurface(image_surface);
     SDL_FreeSurface(screen_surface);
-
     return 0;
 }
 

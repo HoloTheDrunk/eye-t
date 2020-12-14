@@ -7,7 +7,7 @@
 #include "pixel_operations.h"
 #include "types/tuple.h"
 
-Tuple Bounds_Detector(SDL_Surface* image, unsigned height, unsigned width);
+Tuple Bounds_Detector(SDL_Surface *image, unsigned height, unsigned width);
 
 SDL_Surface* auto_rotate(SDL_Surface* image);
 

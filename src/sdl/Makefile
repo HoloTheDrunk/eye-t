@@ -11,8 +11,10 @@ all: main
 main: pixel_operations.o main.o image_load.o convolution_matrix.o otsu.o \
 	types/matrix.o types/tuple.o types/binary_tree.o autorotate.o rotation.o \
 	segmentation.o ../neuralnetwork/layer.o  ../neuralnetwork/Network.o \
-	../neuralnetwork/NeuralNetwork.o ../neuralnetwork/surface_binlist.o
+	../neuralnetwork/NeuralNetwork.o ../neuralnetwork/surface_binlist.o \
+	recons.o
 main.o: main.c *.h types/*.h ../neuralnetwork/*.c  ../neuralnetwork/*.h
+
 
 clean:
 	${RM} *.o
@@ -24,3 +26,4 @@ clean:
 	${RM} ./types/*.d
 
 # END
+
