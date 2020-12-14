@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include "Network.h"
-
+#include <err.h>
 
 void initnet(Network *self,int input_dim)
 {
-    self -> input_dim = input_dim; 
-    self -> layers_dim = 0; 
-    self -> layers = calloc(self->layers_dim,sizeof(layer)); 
+    self -> input_dim = input_dim;
+    self -> layers_dim = 0;
+    self -> layers = calloc(self->layers_dim,sizeof(layer));
 }
 
 void add_layer(Network *self,int size)
@@ -20,7 +20,7 @@ void add_layer(Network *self,int size)
     }
     else
     {
-        input_dim = self->input_dim; 
+        input_dim = self->input_dim;
     }
     self ->layers_dim +=1;
     self ->layers = realloc(self->layers,(self->layers_dim)*sizeof(layer));
@@ -31,24 +31,24 @@ void add_layer(Network *self,int size)
 
 void savestruct(Network *self,char *File)
 {
-    FILE *fichier =NULL;
-    fichier = fopen(File, "w");
-    if(fichier!=NULL)
+    FILE *file = fopen(File, "w");
+    if(!file)
     {
-        printf("fichier ouvert\n");
-        fwrite(self,sizeof(Network),1,fichier);
-        fclose(fichier);
+        perror(File);
+        errx(1, "The file wasn't able to be read/created");
     }
     else
     {
-        printf("fopen dont work\n");
+        printf("fichier ouvert\n");
+        fwrite(self,sizeof(Network),1,file);
+        fclose(file);
     }
 }
+
 void loadstruct(Network *self,char *File)
 {
-    FILE *file =NULL;
-    file = fopen(File, "r");
-    if(file!=NULL)
+    FILE *file = fopen(File, "r");
+    if(file)
     {
         printf("fichier ouvert\n");
         size_t res = fread(self,sizeof(Network),1,file);
@@ -58,13 +58,16 @@ void loadstruct(Network *self,char *File)
     }
     else
     {
-        printf("fopen fail \n");
+        perror(File);
+        errx(1, "The file wasn't able to be loaded");
     }
 }
+
+
 void savenet(Network *self,char *File)
 {
     FILE* file = NULL;
-    
+
     file = fopen(File, "w");
     if (file != NULL)
     {
@@ -100,7 +103,7 @@ void feedforward(Network *self, double *input,double *out)
         double *output=calloc(size,sizeof(double));
 
         forward(&(self->layers[i]),out,output);
-        
+
         out = realloc(out,size*sizeof(double));
         for(int copie2=0; copie2<size;copie2++)
         {
@@ -118,10 +121,10 @@ void feedforward(Network *self, double *input,double *out)
 int predict(Network *self,double *input,double *out)
 {
     feedforward(self,input,out);
-    
-    layer lastelayer = self->layers[self->layers_dim-1]; 
+
+    layer lastelayer = self->layers[self->layers_dim-1];
     int size = lastelayer.size;
-    
+
     int index_max=0;
     double max=lastelayer.out[0];
 
@@ -137,7 +140,7 @@ int predict(Network *self,double *input,double *out)
 
     //printf("max = %f\n", max);
     //printf("index_max = %d\n",index_max);
-    return index_max; 
+    return index_max;
 }
 
 
@@ -160,7 +163,7 @@ double evaluate(Network *self,double **inputlist,int *result,int sizeoflist)
 void train(Network *self,double **inputlist,int *result,int step,int lenres)
 {
     printf("step %d\n",step);
-    double max = 0; 
+    double max = 0;
     double condieval;
     do
     {
@@ -185,9 +188,9 @@ void train(Network *self,double **inputlist,int *result,int step,int lenres)
                 double *outi = calloc(inputdim,sizeof(double));
                 indexmax= predict(self,inputlist[j],outi);
 
-                //calcule of error 
+                //calcule of error
                 double* outll = lastlayer.out;
-                int outsize = layerlist[self->layers_dim-1].size; 
+                int outsize = layerlist[self->layers_dim-1].size;
                 double *error=calloc(outsize,sizeof(double));
                 error[result[j]]=1;
 
@@ -205,7 +208,7 @@ void train(Network *self,double **inputlist,int *result,int step,int lenres)
                 {
                     layer l = layerlist[ilayer];
                     layer b = layerlist[ilayer+1];
-                    int size = layerlist[ilayer].size; 
+                    int size = layerlist[ilayer].size;
                     for(int index = 0; index<size; index++)
                     {
                         //calcule of delta
@@ -215,7 +218,7 @@ void train(Network *self,double **inputlist,int *result,int step,int lenres)
                         {
                              double wi= b.weight[all*size+index];
                              double delta = b.deltas[index];
-                             wiandt+=wi*delta; 
+                             wiandt+=wi*delta;
                         }
                         l.deltas[index] = pout*(1-pout)*wiandt;
                     }
