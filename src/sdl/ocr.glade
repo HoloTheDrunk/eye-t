@@ -325,7 +325,7 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
@@ -360,7 +360,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
+                <property name="fill">False</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -372,6 +372,8 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkImage" id="process_step_1">
+                    <property name="width_request">132</property>
+                    <property name="height_request">132</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_name">image-x-generic</property>
@@ -385,6 +387,8 @@
                 </child>
                 <child>
                   <object class="GtkImage" id="process_step_2">
+                    <property name="width_request">132</property>
+                    <property name="height_request">132</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_name">image-x-generic</property>
@@ -398,6 +402,8 @@
                 </child>
                 <child>
                   <object class="GtkImage" id="process_step_3">
+                    <property name="width_request">132</property>
+                    <property name="height_request">132</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_name">image-x-generic</property>
@@ -411,6 +417,8 @@
                 </child>
                 <child>
                   <object class="GtkImage" id="process_step_4">
+                    <property name="width_request">132</property>
+                    <property name="height_request">132</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_name">image-x-generic</property>
@@ -424,6 +432,8 @@
                 </child>
                 <child>
                   <object class="GtkImage" id="process_step_5">
+                    <property name="width_request">132</property>
+                    <property name="height_request">132</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_name">image-x-generic</property>
@@ -437,6 +447,8 @@
                 </child>
                 <child>
                   <object class="GtkImage" id="process_step_6">
+                    <property name="width_request">132</property>
+                    <property name="height_request">132</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_name">image-x-generic</property>
@@ -450,14 +462,14 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>

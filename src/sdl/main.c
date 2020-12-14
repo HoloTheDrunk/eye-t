@@ -1,15 +1,11 @@
 #include "main.h"
 #include <gtk/gtk.h>
 
+#ifndef UNUSED
 #define UNUSED(x) (void)(x)
+#endif
 
-time_t start, stop;
-clock_t ticks;
-double value;
-
-typedef struct ProcessingImages
-{
-} ProcessingImages;
+#define COUCOU(x) g_print("coucou %i\n", x);
 
 typedef struct BannerMenu
 {
@@ -27,6 +23,7 @@ typedef struct UserInterface
     BannerMenu banner_menu;
 
     // Input image
+    char *input_filename;
     GtkEventBox *input_image_event_box;
     GtkImage *input_image;
 
@@ -48,7 +45,7 @@ typedef struct UserInterface
     // Output
     GtkTextBuffer *output_text;
     GtkTextBuffer *output_tree_text;
-    GtkImage *processing_images[6];
+    GtkImage **processing_images;
 } UserInterface;
 
 SDL_Surface* Resize(SDL_Surface *img)
@@ -76,6 +73,37 @@ SDL_Surface* redImage(int w,int h,SDL_Surface* src)
     return surface;
 }
 
+void resize_to_fit(GtkImage *image, int size)
+{
+    COUCOU(1);
+    // Resize image to fit
+    const GdkPixbuf *pb =
+        gtk_image_get_pixbuf(image);
+    COUCOU(2);
+    g_print("%s\n", (pb == NULL ? "NULL" : "NOT NULL"));
+    const int imgW = gdk_pixbuf_get_width(pb);
+    COUCOU(3);
+    const int imgH = gdk_pixbuf_get_height(pb);
+    COUCOU(4);
+
+    double ratio;
+    int destW;
+    int destH;
+
+    if(imgW > imgH)
+        ratio = size / (double)imgW;
+    else
+        ratio = size / (double)imgH;
+
+    destW = ratio * imgW;
+    destH = ratio * imgH;
+
+    GdkPixbuf *result =
+        gdk_pixbuf_scale_simple(pb, destW, destH, GDK_INTERP_BILINEAR);
+
+    gtk_image_set_from_pixbuf(image, result);
+}
+
 void run_file_opener(UserInterface *ui)
 {
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
@@ -89,35 +117,16 @@ void run_file_opener(UserInterface *ui)
     gtk_file_filter_set_name(filter, "Images (.png/.jpg/.jpeg/etc...)");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 
-    const char *filename;
+    char *filename;
     switch(gtk_dialog_run(GTK_DIALOG(dialog)))
     {
         case GTK_RESPONSE_ACCEPT:
             filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
             gtk_image_set_from_file(ui->input_image, filename);
+            ui->input_filename = filename;
 
-            // Resize image to fit
-            const GdkPixbuf *pb =
-                gtk_image_get_pixbuf(GTK_IMAGE(ui->input_image));
-            const int imgW = gdk_pixbuf_get_width(pb);
-            const int imgH = gdk_pixbuf_get_height(pb);
-
-            double ratio;
-            int destW;
-            int destH;
-
-            if(imgW > imgH)
-                ratio = 360 / (double)imgW;
-            else
-                ratio = 360 / (double)imgH;
-
-            destW = ratio * imgW;
-            destH = ratio * imgH;
-
-            GdkPixbuf *result =
-                gdk_pixbuf_scale_simple(pb, destW, destH, GDK_INTERP_BILINEAR);
-
-            gtk_image_set_from_pixbuf(ui->input_image, result);
+            resize_to_fit(ui->input_image, 360);
 
             break;
         default:
@@ -271,18 +280,58 @@ void save_output(UserInterface *ui)
     }
 }
 
+void convert_step(int i, SDL_Surface *image_surface, UserInterface *ui)
+{
+    char *filename;
+    asprintf(&filename, "resources/steps/step_%i.png", i);
+    // SAVE PNG IMAGE
+    // save_image(image_surface, filename);
+    gtk_image_set_from_file(ui->processing_images[i], filename);
+    resize_to_fit(ui->processing_images[i], 132);
+}
+
 void on_output_button_clicked(GtkButton *button, gpointer user_data)
 {
     UNUSED(button);
     UserInterface *ui = user_data;
 
-    // Call OCR and build detected null-terminated text, then output
+    // Do the stuff
+    SDL_Surface *image_surface = load_image(ui->input_filename);
+
+    greyscale(image_surface);
+    // convert_step(0, image_surface, ui);
+
+    image_surface = Otsu_method(image_surface, 255);
+    // convert_step(1, image_surface, ui);
+
+    if(gtk_toggle_button_get_active(\
+                GTK_TOGGLE_BUTTON(ui->manual_rotation_toggle)))
+        image_surface = SDL_RotationCentral(image_surface,\
+                gtk_spin_button_get_value(ui->manual_rotation_amount));
+    else
+        image_surface = auto_rotate(image_surface);
+    // convert_step(2, image_surface, ui);
+
+    image_surface = convolute(image_surface, gaussian_blur,\
+            ARRAYLEN(gaussian_blur));
+    // convert_step(3, image_surface, ui);
+
+    image_surface = Otsu_method(image_surface, 0);
+    // convert_step(4, image_surface, ui);
+    COUCOU(1);
+
+    //fill_edges(image_surface, 0, 255);
+    // convert_step(5, image_surface, ui);
+    COUCOU(2);
+
     // gtk_text_buffer_set_text(ui->output_text, [TEXT], -1);
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ui->save_output_toggle)))
     {
         save_output(ui);
     }
+
+    SDL_FreeSurface(image_surface);
 }
 
 int main()
@@ -354,6 +403,22 @@ int main()
     // Output
     GtkTextBuffer *output_text =
         GTK_TEXT_BUFFER(gtk_builder_get_object(builder, "output_text"));
+    GtkTextBuffer *output_tree_text =
+        GTK_TEXT_BUFFER(gtk_builder_get_object(builder, "tree_output_text"));
+    GtkImage *processing_images[6];
+    for(int i = 0; i < 6; i++)
+    {
+        char *image_name;
+        asprintf(&image_name, "process_step_%i", i+1);
+        processing_images[i] =
+            GTK_IMAGE(gtk_builder_get_object(builder, image_name));
+
+        char *bmp_name;
+        asprintf(&bmp_name, "./resources/steps/step_%i.bmp", i+1);
+        gtk_image_set_from_file(processing_images[i], bmp_name);
+        g_print("%s\n", processing_images[i] == NULL ? "NULL" : "OK");
+        //resize_to_fit(processing_images[i], 132);
+    }
 
     UserInterface ui =
     {
@@ -369,6 +434,7 @@ int main()
         },
 
         // Input image
+        .input_filename = malloc(256 * sizeof(char)),
         .input_image_event_box = input_image_event_box,
         .input_image = input_image,
 
@@ -388,6 +454,8 @@ int main()
 
         // Output
         .output_text = output_text,
+        .output_tree_text = output_tree_text,
+        .processing_images = processing_images,
     };
 
     // Connects event handlers ////////////////////////////////////////////////
@@ -419,7 +487,17 @@ int main()
 
     ///////////////////////////////////////////////////////////////////////////
 
+    // Legacy: Print supported image formats.
+    // GSList *formats = gdk_pixbuf_get_formats();
+    // for(guint i = 0; i < g_slist_length(formats); i++)
+    // {
+    //     g_print("%s\n",
+    //             gdk_pixbuf_format_get_name(g_slist_nth_data(formats, i)));
+    // }
+
     gtk_main();
+
+    free(ui.input_filename);
 
     return 0;
 }
