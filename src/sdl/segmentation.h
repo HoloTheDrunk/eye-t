@@ -11,4 +11,5 @@
 int WhiteLine(Matrix* matrix, int y); //1
 void SegmentationTest(SDL_Surface* image);//16
 
+BinTree* Segmentation(SDL_Surface* image);
 #endif

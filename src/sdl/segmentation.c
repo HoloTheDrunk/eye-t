@@ -380,7 +380,9 @@ BinTree* Segmentation(SDL_Surface* image) //16
     //BinTree* bintree = NewBinTree(matrix);
     //MatBT_Print(bintree);
     //return bintree;
-    return SegmentationRec(bintree);
+    bintree = SegmentationRec(bintree);
+    Resize_Leaves(bintree,28,28);
+    return bintree;
 
 }
 
