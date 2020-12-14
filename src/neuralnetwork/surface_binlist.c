@@ -15,7 +15,7 @@ int* surface_binlist(SDL_Surface* picture)
 			pixel = get_pixel(picture, row, col);
 			SDL_GetRGB(pixel, picture->format, &r, &g, &b);
 
-			if(r == 0)
+			if(r == 0 && g == 0 && b == 0)
 				result[row * width + col] = 1; //noir
 			else
 				result[row * width + col] = 0; //blanc
