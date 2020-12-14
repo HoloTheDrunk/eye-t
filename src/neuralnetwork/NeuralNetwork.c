@@ -56,7 +56,7 @@ void TrainNN(Network *net)
         inputliste[i]=image2;
     }
 
-    train(net,inputliste,res,100,nbimage);
+    train(net,inputliste,res,200,nbimage);
 }
 
 
@@ -85,15 +85,23 @@ int main()
     add_layer(&net,100);
     add_layer(&net,127);
 
+    SDL_Surface* image_surface;
+
+    init_sdl();
+
+    image_surface = load_image("set/108/0.jpg");
+
 
     TrainNN(&net);
 
     savestruct(&net, "struct");
     savenet(&net, "net");
 
+    Matrix* matrix = Image_To_Matrix(image_surface, 28, 28);
 
-    // GetCharNN
+    PrintMatrix(matrix);
 
+    GetCharNN(&net, matrix);
 
     freeall(&net);
     return 0;
