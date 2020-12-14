@@ -6,10 +6,10 @@
 #include "Network.h"
 #include "sdl_func.h"
 #include "surface_binlist.h"
-#include "pixel_operations.h"
+#include "../sdl/pixel_operations.h"
 
 
-#define nbimage 62
+#define nbImages 62
 
 int res[] = {(int)'0', (int)'1', (int)'2', (int)'3', (int)'4', (int)'5',\
     (int)'6', (int)'7', (int)'8', (int)'9',\
@@ -25,17 +25,17 @@ int res[] = {(int)'0', (int)'1', (int)'2', (int)'3', (int)'4', (int)'5',\
         (int)'y', (int)'z'};
 
 
-void InitNN(Network *self)
+void InitNN(Network *network)
 {
-    initnet(self,784);
-    add_layer(self,100);
-    add_layer(self,127);
+    InitNetwork(network,784);
+    AddLayer(network,100);
+    AddLayer(network,127);
 }
 
 
 void TrainNN(Network *net)
 {
-    double **inputliste = malloc(62 * sizeof(double));
+    double **inputList = malloc(62 * sizeof(double));
     init_sdl();
     for(int i = 0; i < 62; i++)
     {
@@ -44,36 +44,32 @@ void TrainNN(Network *net)
         sprintf(ch, "%d", res[i]);
         strcat(name, ch);
         strcat(name,"/0.jpg");
-        puts(name);
+
         SDL_Surface* image_surface = load_image(name);
         int *image1 = surface_binlist(image_surface);
         double *image2 = malloc(784*sizeof(double));
-        printf("\n");
+
         for(int j = 0; j < 784; j++)
-        {
-            image2[j]=image1[j];
-        }
-        inputliste[i]=image2;
+            image2[j] = image1[j];
+        inputList[i] = image2;
     }
 
-    train(net,inputliste,res,200,nbimage);
+    Train(net,inputList, res, nbImages);
 }
 
 
 char GetCharNN(Network *net, Matrix* matrix)
 {
     int* matrix_letter = matrix_binlist(matrix);
-    double *image2 = malloc(784*sizeof(double));
-    printf("\n");
+    double *imgMatrix = malloc(784*sizeof(double));
+
     for(int j = 0; j < 784; j++)
-    {
-        image2[j]=matrix_letter[j];
-    }
+        imgMatrix[j] = matrix_letter[j];
 
-    double *out3 = calloc(net->input_dim, sizeof(double));
-    char letter = (char)predict(net, image2, out3);
+    double *output = calloc(net->input_dim, sizeof(double));
+    char letter = (char)Predict(net, imgMatrix, output);
 
-    printf("The prediction is : %c", letter);
+    printf("The prediction is : %c\n", letter);
     return letter;
 }
 
@@ -81,21 +77,14 @@ char GetCharNN(Network *net, Matrix* matrix)
 int main()
 {
     Network net;
-    initnet(&net,784);
-    add_layer(&net,100);
-    add_layer(&net,127);
+    InitNN(&net);
 
     SDL_Surface* image_surface;
-
     init_sdl();
-
     image_surface = load_image("set/108/0.jpg");
 
 
     TrainNN(&net);
-
-    savestruct(&net, "struct");
-    savenet(&net, "net");
 
     Matrix* matrix = Image_To_Matrix(image_surface, 28, 28);
 

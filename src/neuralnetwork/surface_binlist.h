@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "sdl_func.h"
-#include "pixel_operations.h"
+#include "../sdl/pixel_operations.h"
 #include "../sdl/types/matrix.h"
 
 

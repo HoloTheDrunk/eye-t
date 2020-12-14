@@ -2,50 +2,33 @@
 #define NETWORK_H
 #include "layer.h"
 
-/*
-    description of the functionality of the neural network 
-    for more information contact me on git hub : Zorogo
-    thank you 
-    --Ziane
-*/
-
-//structure of the neuronal network
 typedef struct Network
 {
-    //dimention of the image (juste the input exemple:2 for XOR)
-	int input_dim;
-    //number of layer
-	int layers_dim;
-    //liste of layer
-	layer *layers; 
-}Network;
+    int input_dim;			//Dimention of the inputs. (Here, an image)
+    int layers_dim;			//Number of layers wanted.
+	Layer *layers;			//A list of all the layers for accessibility.
+} Network;
 
-//init the network
-void initnet(Network *self,int input_dim);
+//Initialises the Network with the number of inputs.
+void InitNetwork(Network *network, int input_dim);
 
-//add layer with number of neurone
-void add_layer(Network *self,int size);
+//Adds a new layer by specifying the number of neurons wanted.
+void AddLayer(Network *network, int size);
 
-//for load and save structure
-void savestruct(Network *self,char *File);
-void loadstruct(Network *self,char *File);
-void savenet(Network *self,char *File);
+//Computes the matching outputs to a specific set of inputs.
+void ForwardPass(Network *network ,double *input, double *out);
 
-//calcule the output liste of all the network
-void feedforward(Network *self,double *input,double *out);
+//Returns the character matching to the inputs, according to the NN.
+int Predict(Network *network, double *input, double *out);
 
-//BEST FUNCTION return the int of the char of the image in assci for the ocr
-int predict(Network *self,double *input,double *out);
+//Computes how efficient the network currently is.
+double Evaluate(Network *network, double **inputlist, int *result,\
+		int sizeoflist);
 
-//evalue the efficacitie of the network with all the exemple
-double evaluate(Network *self,double **inputlist,int *result,int sizeoflist);
+//Trains the network according to the images given.
+void Train(Network *network, double **inputlist, int *result, int nbImages);
 
-//SECONDE BEST FUNCTION train the network with the exemple
-void train(Network *self,double **inputlist,int *result,int step,int lenres);
+//Free all the RAM used by the network.
+void freeall(Network *network);
 
-//free all alloc on the network
-void freeall(Network *self);
-
-//print all the neurone (use for debug befor i discovers gdb)
-void printnet(Network *self);
 #endif

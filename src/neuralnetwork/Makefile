@@ -9,13 +9,13 @@ LDLIBS= `pkg-config --libs sdl` -lSDL_image -lm
 
 all: NeuralNetwork
 
-NeuralNetwork: sdl_func.o surface_binlist.o pixel_operations.o layer.o Network.o NeuralNetwork.o ../sdl/types/matrix.o
+NeuralNetwork: sdl_func.o surface_binlist.o ../sdl/pixel_operations.o layer.o Network.o NeuralNetwork.o ../sdl/types/matrix.o
 
-NeuralNetwork.o: sdl_func.h  surface_binlist.h pixel_operations.h  layer.h Network.h ../sdl/types/matrix.h
+NeuralNetwork.o: sdl_func.h  surface_binlist.h ../sdl/pixel_operations.h  layer.h Network.h ../sdl/types/matrix.h
 
 clean:
 	${RM} *.o
 	${RM} *.d
-	${RM} main
+	${RM} NeuralNetwork
 
 # END

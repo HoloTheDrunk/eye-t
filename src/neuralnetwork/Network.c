@@ -2,255 +2,175 @@
 #include <stdlib.h>
 #include <math.h>
 #include "Network.h"
-#include <err.h>
 
-void initnet(Network *self,int input_dim)
+
+void InitNetwork(Network *network, int input_dim)
 {
-    self -> input_dim = input_dim;
-    self -> layers_dim = 0;
-    self -> layers = calloc(self->layers_dim,sizeof(layer));
+    network->input_dim = input_dim;
+    network->layers_dim = 0;
+    network->layers = calloc(network->layers_dim,sizeof(Layer));
 }
 
-void add_layer(Network *self,int size)
+void AddLayer(Network *network, int size)
 {
-    int input_dim=0;
-    if(self->layers_dim > 0)
-    {
-        input_dim = self->layers[(self->layers_dim)-1].size;
-    }
-    else
-    {
-        input_dim = self->input_dim;
-    }
-    self ->layers_dim +=1;
-    self ->layers = realloc(self->layers,(self->layers_dim)*sizeof(layer));
-    layer newlayer;
-    init(&newlayer,size,input_dim);
-    self ->layers[(self->layers_dim)-1]=newlayer;
+    int input_dim = 0;
+    if(network->layers_dim > 0)
+        input_dim = network->layers[(network->layers_dim)-1].size;
+	else
+        input_dim = network->input_dim;
+
+    network->layers_dim +=1;
+    network->layers = realloc(network->layers,\
+			(network->layers_dim) * sizeof(Layer));
+    Layer newLayer;
+    Init(&newLayer, size, input_dim);
+    network->layers[(network->layers_dim) - 1] = newLayer;
 }
 
-void savestruct(Network *self,char *File)
+void ForwardPass(Network *network, double *input, double *out)
 {
-    FILE *file = fopen(File, "w");
-    if(!file)
-    {
-        perror(File);
-        errx(1, "The file wasn't able to be read/created");
-    }
-    else
-    {
-        printf("fichier ouvert\n");
-        fwrite(self,sizeof(Network),1,file);
-        fclose(file);
-    }
-}
 
-void loadstruct(Network *self,char *File)
-{
-    FILE *file = fopen(File, "r");
-    if(file)
+    for(int i = 0; i < network->input_dim; i++)
     {
-        printf("fichier ouvert\n");
-        size_t res = fread(self,sizeof(Network),1,file);
-        if(res==0)
-            printf("erroor fread");
-        fclose(file);
+        out[i] = input[i];
     }
-    else
+
+    for(int i = 0; i < network->layers_dim;i++)
     {
-        perror(File);
-        errx(1, "The file wasn't able to be loaded");
-    }
-}
 
+        int size = network->layers[i].size;
+        double *output = calloc(size, sizeof(double));
 
-void savenet(Network *self,char *File)
-{
-    FILE* file = NULL;
+        Forward(&(network->layers[i]), out, output);
 
-    file = fopen(File, "w");
-    if (file != NULL)
-    {
-        //printf("fail to open fail %s \n",File);
-        layer *listelayer= self->layers;
-        int nblayer = self->layers_dim;
-        for (int i = 0; i<nblayer;i++)
+        out = realloc(out, size * sizeof(double));
+        for(int j = 0; j < size; j++)
         {
-            double *matrix = listelayer[i].weight;
-            int matrixsize = (listelayer[i].size)*(listelayer[i].input_size);
-            fwrite(matrix,matrixsize,sizeof(double),file);
+            out[j] = output[j];
+            network->layers[i].out[j] = output[j];
         }
-        fclose(file);
-    }
-    else
-    {
-        printf("fopen fail\n");
-    }
-}
-
-void feedforward(Network *self, double *input,double *out)
-{
-
-    for(int i=0; i<self->input_dim;i++)
-    {
-        out[i]=input[i];
-    }
-
-    for(int i=0; i<self->layers_dim;i++)
-    {
-
-        int size = self->layers[i].size;
-        double *output=calloc(size,sizeof(double));
-
-        forward(&(self->layers[i]),out,output);
-
-        out = realloc(out,size*sizeof(double));
-        for(int copie2=0; copie2<size;copie2++)
-        {
-            //printf("out befor = %f \n",out[copie2]);
-            out[copie2]= output[copie2];
-           // printf("out after = %f \n",out[copie2]);
-            self->layers[i].out[copie2] = output[copie2];
-        }
-        //printf("size on layer %d \n",size);
         free(output);
     }
     free(out);
 }
 
-int predict(Network *self,double *input,double *out)
+int Predict(Network *network,double *input,double *out)
 {
-    feedforward(self,input,out);
+    ForwardPass(network,input,out);
 
-    layer lastelayer = self->layers[self->layers_dim-1];
-    int size = lastelayer.size;
+    Layer finalLayer = network->layers[network->layers_dim-1];
+    int size = finalLayer.size;
 
-    int index_max=0;
-    double max=lastelayer.out[0];
+    int maxIndex = 0;
+    double max = finalLayer.out[0];
 
-    for(int i=0;i<size;i++)
+    for(int i = 0; i < size; i++)
     {
-        if(max<lastelayer.out[i])
+        if(max < finalLayer.out[i])
         {
-            index_max=i;
-            max = lastelayer.out[i];
+            maxIndex = i;
+            max = finalLayer.out[i];
         }
-       // printf("out i = %f  %d \n",out[i],i);
     }
 
-    //printf("max = %f\n", max);
-    //printf("index_max = %d\n",index_max);
-    return index_max;
+   return maxIndex;
+}
+
+double Evaluate(Network *network,double **inputlist,int *result,int sizeoflist)
+{
+    double sum = 0;
+    for(int i = 0; i < sizeoflist; i++)
+    {
+        double *out = calloc(network->input_dim, sizeof(double));
+        if(Predict(network, inputlist[i], out) == result[i])
+        {
+            sum += 1;
+        }
+    }
+    return sum / (double)sizeoflist;
 }
 
 
-double evaluate(Network *self,double **inputlist,int *result,int sizeoflist)
+void Train(Network *network, double **inputlist, int *result, int nbImages)
 {
-    //int size = self->layers[self->layers_dim -1].size;
-    double sum =0;
-    for(int i=0; i<sizeoflist; i++)
-    {
-        double *out = calloc(self->input_dim,sizeof(double));
-        if(predict(self,inputlist[i],out)==result[i])
-        {
-            sum+=1;
-        }
-    }
-    return sum/(double)sizeoflist;
-}
-
-
-void train(Network *self,double **inputlist,int *result,int step,int lenres)
-{
-    printf("step %d\n",step);
     double max = 0;
-    double condieval;
+    double currAccuracy;
     do
     {
-        double eval = evaluate(self,inputlist,result,lenres);
-        if(eval>max)
+        double resEval = Evaluate(network, inputlist, result, nbImages);
+        if(resEval > max)
+            max = resEval;
+
+        currAccuracy = resEval * 100;
+
+        for(int j = 0; j < nbImages; j++)
         {
-            max = eval;
-            printf("eval = %f pourcent \n",eval*100);
-        }
-        condieval = eval*100;
-        for(int j=0; j<lenres;j++)
-        {
-            int condition = 0;
-            int indexmax;
-            layer *layerlist = self->layers;
-            layer lastlayer = layerlist[self->layers_dim-1];
-            double inputdim = self->input_dim;
+            int trainingIsSufficient = 0;
+            int maxIndex;
+            Layer *layersList = network->layers;
+            Layer finalLayer = layersList[network->layers_dim-1];
+            double inputDim = network->input_dim;
 
             do
             {
-                //calcule of the outpout for the error
-                double *outi = calloc(inputdim,sizeof(double));
-                indexmax= predict(self,inputlist[j],outi);
+                //Computes the error of every output.
+                double *currOutputValue = calloc(inputDim,sizeof(double));
+                maxIndex = Predict(network, inputlist[j], currOutputValue);
 
-                //calcule of error
-                double* outll = lastlayer.out;
-                int outsize = layerlist[self->layers_dim-1].size;
-                double *error=calloc(outsize,sizeof(double));
-                error[result[j]]=1;
+                //Computing errors.
+                double* finalLayerOutput = finalLayer.out;
+                int sizeOutputLayer = layersList[network->layers_dim-1].size;
+                double *error = calloc(sizeOutputLayer, sizeof(double));
+                error[result[j]] = 1;
 
-                for(int k = 0; k<outsize; k++)
+                for(int k = 0; k < sizeOutputLayer; k++)
                 {
-                    error[k] -= outll[k];
-                    lastlayer.deltas[k]= error[k];//*outll[k]*(1-outll[k]);
+                    error[k] -= finalLayerOutput[k];
+                    finalLayer.deltas[k]= error[k];
                 }
-
-
                 free(error);
 
-                //backpropagation
-                for(int ilayer =self->layers_dim-2; ilayer>=0;ilayer--)
+                //BackPropagation.
+                for(int currLayer = network->layers_dim-2; currLayer >= 0;\
+						currLayer--)
                 {
-                    layer l = layerlist[ilayer];
-                    layer b = layerlist[ilayer+1];
-                    int size = layerlist[ilayer].size;
-                    for(int index = 0; index<size; index++)
+                    Layer l = layersList[currLayer];
+                    Layer b = layersList[currLayer+1];
+                    int size = layersList[currLayer].size;
+                    for(int index = 0; index < size; index++)
                     {
-                        //calcule of delta
-                        double wiandt = 0;
-                        double pout = l.out[index];
+                        //Computes delta values.
+                        double sumWeightsDeltas = 0;
+                        double currOutput = l.out[index];
                         for(int all=0;all<size;all++)
                         {
-                             double wi= b.weight[all*size+index];
+                             double currWeight = b.weight[all * size + index];
                              double delta = b.deltas[index];
-                             wiandt+=wi*delta;
+                             sumWeightsDeltas += currWeight * delta;
                         }
-                        l.deltas[index] = pout*(1-pout)*wiandt;
+                        l.deltas[index] = currOutput * (1-currOutput) *\
+										  sumWeightsDeltas;
                     }
                 }
 
-                double *out2 = calloc(inputdim,sizeof(double));
-                indexmax= predict(self,inputlist[j],out2);
-                condition =!(result[j] == indexmax);
-            }while(condition);
+                double *out2 = calloc(inputDim, sizeof(double));
+                maxIndex = Predict(network, inputlist[j], out2);
+                trainingIsSufficient =! (result[j] == maxIndex);
+            } while(trainingIsSufficient);
         }
-    }while(condieval<97);
+    } while (currAccuracy < 97);
 
 }
 
 
-void freeall(Network *self)
+void freeall(Network *network)
 {
-    for(int i=0; i<(self->layers_dim);i++)
+    for(int i=0; i < (network->layers_dim); i++)
     {
-        free(self->layers[i].bias);
-        free(self->layers[i].weight);
-        free(self->layers[i].deltas);
-        free(self->layers[i].out);
+        free(network->layers[i].bias);
+        free(network->layers[i].weight);
+        free(network->layers[i].deltas);
+        free(network->layers[i].out);
     }
-    free(self->layers);
-}
-
-void printnet(Network *self)
-{
-   for(int i=0;i<self->layers_dim;i++)
-   {
-       printlayer(&(self->layers[i]));
-       printf("\n\n");
-   }
+    free(network->layers);
 }

@@ -31,6 +31,6 @@ int* matrix_binlist(Matrix* matrix)
     int* result = malloc((matrix->width*matrix->height)*sizeof(int));
     for(int row = 0; row < matrix->height; row++)
         for(int col = 0; col < matrix->width; col++)
-            result[row*matrix->width + col] = GetElement(matrix, row, col);
+            result[row*matrix->width + col] = !GetElement(matrix, row, col);
     return result;
 }
