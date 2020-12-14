@@ -8,6 +8,18 @@ char *mystrcat(char *a, char *b) {
   return rtn;
 }
 
+void LeavesToChar(BinTree* bin)
+{
+    if (bin->left == NULL && bin->right == NULL)
+    {
+        // bin->txt = NeuralNetwork(..)
+    }
+    else
+    {
+        LeavesToChar(bin->right);
+        LeavesToChar(bin->left);
+    }
+}
 
 char* Reconstruction(BinTree* bin) // Pas ouf :(
 {
