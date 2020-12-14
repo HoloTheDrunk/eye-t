@@ -2,7 +2,7 @@
 #define SURFACE_BINLIST_H
 
 #include <stdio.h>
-#include "sdl_func.h"
+#include "../sdl/image_load.h"
 #include "../sdl/pixel_operations.h"
 #include "../sdl/types/matrix.h"
 

@@ -25,7 +25,7 @@ void Add(double *res, double B[], int size)
 {
     for(int j = 0; j < size; j++)
     {
-        res[j] += B[j]; 
+        res[j] += B[j];
     }
 }
 
@@ -36,16 +36,16 @@ double Sigmoid(double x)
 
 double Sigmoid_prime(double x)
 {
-    return Sigmoid(x) * (1 - Sigmoid(x)); 
+    return Sigmoid(x) * (1 - Sigmoid(x));
 }
 
 void ComputeWeight(Layer *layer, double *input)
 {
     int cols = layer->input_size;
-    int rows = layer->size; 
+    int rows = layer->size;
     for(int i = 0; i < rows; i++)
     {
-        double delta = layer->deltas[i]; 
+        double delta = layer->deltas[i];
         for(int j = 0; j < cols ; j++)
         {
             layer->weight[i * cols + j] += input[j]* delta * 0.1;
