@@ -81,16 +81,18 @@ int main()
 
     SDL_Surface* image_surface;
     init_sdl();
-    image_surface = load_image("set/108/0.jpg");
-
+    image_surface = load_image("set/105/0.jpg");
 
     TrainNN(&net);
 
     Matrix* matrix = Image_To_Matrix(image_surface, 28, 28);
-
     PrintMatrix(matrix);
-
     GetCharNN(&net, matrix);
+
+	SDL_Surface *image_surface2 = load_image("set/106/0.jpg");
+	Matrix *matrix2 = Image_To_Matrix(image_surface2, 28, 28);
+	PrintMatrix(matrix2);
+	GetCharNN(&net, matrix2);
 
     freeall(&net);
     return 0;
