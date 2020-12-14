@@ -1,22 +1,21 @@
+# Simple SDL mini Makefile
+
 CC=gcc
 
-CPPFLAGS=`pkg-config --cflags sdl` -MMD -g
-CFLAGS= -Wall -Wextra -Werror -std=c99 -O3 -g
-LDFLAGS=
-LDLIBS= -lm
-all: xor ocr
-xor: toolbox.o xor.o
-ocr: toolbox.o ocr.o ./types/matrix.o lecture.o
-lecture : lecture.o ./types/matrix.o
+CPPFLAGS= `pkg-config --cflags sdl` -MMD
+CFLAGS= -Wall -Wextra -Werror -std=c99 -O1 
+LDFLAGS= 
+LDLIBS= `pkg-config --libs sdl` -lSDL_image -lm
 
-xor.o: xor.c network.h
-ocr.o: ocr.c network.h lecture.h ./types/matrix.c ./types/matrix.h
-lecture.o : lecture.c lecture.h ./types/matrix.c ./types/matrix.h
+all: main
+
+main: sdl_func.o surface_binlist.o pixel_operations.o layer.o Network.o main.o
+
+main.o: sdl_func.h  surface_binlist.h pixel_operations.h  layer.h Network.h
 
 clean:
 	${RM} *.o
 	${RM} *.d
-	${RM} xor
-	${RM} lecture
-	${RM} ocr
+	${RM} main
+
 # END
