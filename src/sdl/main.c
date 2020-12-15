@@ -33,6 +33,10 @@ typedef struct UserInterface
     GtkImage *input_image;
 
     // Buttons /////////////////////////////
+    //// Preview
+    GtkComboBox *preview_interpolation_menu;
+    GdkInterpType interp_type;
+
     //// Options
     GtkCheckButton *save_output_toggle;
     GtkCheckButton *spellcheck_toggle;
@@ -78,7 +82,7 @@ SDL_Surface* redImage(int w,int h,SDL_Surface* src)
     return surface;
 }
 
-void resize_to_fit(GtkImage *image, int size)
+void resize_to_fit(UserInterface *ui, GtkImage *image, int size)
 {
     // Resize image to fit
     const GdkPixbuf *pb = gtk_image_get_pixbuf(image);
@@ -99,9 +103,16 @@ void resize_to_fit(GtkImage *image, int size)
     destH = ratio * imgH;
 
     GdkPixbuf *result =
-        gdk_pixbuf_scale_simple(pb, destW, destH, GDK_INTERP_BILINEAR);
+        gdk_pixbuf_scale_simple(pb, destW, destH, ui->interp_type);
 
     gtk_image_set_from_pixbuf(image, result);
+}
+
+void open_file(UserInterface *ui, char *filename, GtkImage *destination,\
+        int size)
+{
+    gtk_image_set_from_file(destination, filename);
+    resize_to_fit(ui, destination, size);
 }
 
 void run_file_opener(UserInterface *ui)
@@ -123,10 +134,8 @@ void run_file_opener(UserInterface *ui)
         case GTK_RESPONSE_ACCEPT:
             filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 
-            gtk_image_set_from_file(ui->input_image, filename);
+            open_file(ui, filename, ui->input_image, 360);
             ui->input_filename = filename;
-
-            resize_to_fit(ui->input_image, 360);
 
             break;
         default:
@@ -144,7 +153,7 @@ void on_open_activate(GtkMenuItem *menuitem, gpointer user_data)
     run_file_opener(ui);
 }
 
-gboolean on_input_image_event_box_button_press_event(GtkWidget *widget,\
+gboolean on_input_image_event_box_button_release_event(GtkWidget *widget,\
         GdkEvent *event, gpointer user_data)
 {
     UNUSED(widget);
@@ -178,6 +187,33 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
             "license-type", GTK_LICENSE_MIT_X11,
             "authors", authors,
             NULL);
+}
+
+void on_preview_interpolation_menu_changed(GtkComboBox *widget,\
+        gpointer user_data)
+{
+    UserInterface *ui = user_data;
+
+    switch(gtk_combo_box_get_active(GTK_COMBO_BOX(widget)))
+    {
+        case 0:
+            ui->interp_type = GDK_INTERP_NEAREST;
+            break;
+        case 1:
+            ui->interp_type = GDK_INTERP_TILES;
+            break;
+        case 2:
+            ui->interp_type = GDK_INTERP_BILINEAR;
+            break;
+        case 3:
+            ui->interp_type = GDK_INTERP_HYPER;
+            break;
+        default:
+            g_print("how even ?");
+            break;
+    }
+
+    open_file(ui, ui->input_filename, ui->input_image, 360);  
 }
 
 void on_save_button_clicked(GtkButton *button, gpointer user_data)
@@ -288,7 +324,7 @@ void convert_step(int i, SDL_Surface *image_surface, UserInterface *ui)
     // SAVE PNG IMAGE
     // save_image(image_surface, filename);
     gtk_image_set_from_file(ui->processing_images[i], filename);
-    resize_to_fit(ui->processing_images[i], 132);
+    resize_to_fit(ui, ui->processing_images[i], 132);
 }
 
 void on_output_button_clicked(GtkButton *button, gpointer user_data)
@@ -296,20 +332,16 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     UNUSED(button);
     UserInterface *ui = user_data;
 
-    //COUCOU(1);
     // Do the stuff ///////////////////////////////////////////////////////////
     //// Image pre-processing
     SDL_Surface *image_surface = load_image(ui->input_filename);
 
-    //COUCOU(2);
     greyscale(image_surface);
     // convert_step(0, image_surface, ui);
 
-    //COUCOU(3);
     image_surface = Otsu_method(image_surface, 0);
     // convert_step(1, image_surface, ui);
 
-    //COUCOU(4);
     if(gtk_toggle_button_get_active(\
                 GTK_TOGGLE_BUTTON(ui->manual_rotation_toggle)))
         image_surface = SDL_RotationCentral(image_surface,\
@@ -318,7 +350,6 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
         image_surface = auto_rotate(image_surface);
     // convert_step(2, image_surface, ui);
 
-    //COUCOU(5);
     image_surface = convolute(image_surface, gaussian_blur,\
             ARRAYLEN(gaussian_blur));
     // convert_step(3, image_surface, ui);
@@ -326,25 +357,20 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     image_surface = Otsu_method(image_surface, 0);
     // convert_step(4, image_surface, ui);
 
-    fill_edges(image_surface, 0, 255);
+    fill_edges(image_surface, 255, 0);
     // convert_step(5, image_surface, ui);
 
-    //COUCOU(6);
     //// Segmentation
     BinTree* bin = Segmentation(image_surface);
 
-    //COUCOU(7);
     Resize_Leaves(bin, 28, 28);
 
     //MatBT_Print(bin);
 
-    //COUCOU(8);
     LeavesBound(bin , ui->net);
 
-    //COUCOU(9);
     check(bin);
 
-    //COUCOU(10);
     //PrintTree(bin, 0);
 
     // char *output = (char *)calloc(1024, sizeof(char));
@@ -402,7 +428,7 @@ int main()
     GtkImage *input_image =
         GTK_IMAGE(gtk_builder_get_object(builder, "input_image"));
 
-    // Input
+    // Input filter
     GtkFileFilter *file_filter = gtk_file_filter_new();
     gtk_file_filter_add_pixbuf_formats(file_filter);
 
@@ -410,6 +436,12 @@ int main()
     //// Input
     GtkMenuItem *open =
         GTK_MENU_ITEM(gtk_builder_get_object(builder, "open"));
+
+    //// Preview
+    GtkComboBox *preview_interpolation_menu =
+        GTK_COMBO_BOX(gtk_builder_get_object(builder,\
+                    "preview_interpolation_menu"));
+    GdkInterpType interp_type = GDK_INTERP_BILINEAR;
 
     //// Options
     GtkCheckButton *save_output_toggle =
@@ -450,10 +482,8 @@ int main()
         processing_images[i] =
             GTK_IMAGE(gtk_builder_get_object(builder, image_name));
 
-        char *bmp_name;
-        asprintf(&bmp_name, "./resources/steps/step_%i.bmp", i+1);
-        gtk_image_set_from_file(processing_images[i], bmp_name);
-        //resize_to_fit(processing_images[i], 132);
+        //asprintf(&bmp_name, "./resources/steps/step_%i.png", i+1);
+        gtk_image_set_from_file(processing_images[i], "resources/blank.png");
     }
 
     // Quit
@@ -482,6 +512,10 @@ int main()
         .input_image = input_image,
 
         // Buttons
+        //// Preview
+        .preview_interpolation_menu = preview_interpolation_menu,
+        .interp_type = interp_type,
+
         //// Options
         .save_output_toggle = save_output_toggle,
         .spellcheck_toggle = spellcheck_toggle,
@@ -511,8 +545,12 @@ int main()
     g_signal_connect(about, "activate", G_CALLBACK(on_about_activate), &ui);
 
     //// Input image
-    g_signal_connect(GTK_WIDGET(input_image_event_box), "button-press-event",\
-            G_CALLBACK(on_input_image_event_box_button_press_event), &ui);
+    g_signal_connect(GTK_WIDGET(input_image_event_box), "button-release-event",\
+            G_CALLBACK(on_input_image_event_box_button_release_event), &ui);
+
+    //// Preview
+    g_signal_connect(preview_interpolation_menu, "changed",\
+            G_CALLBACK(on_preview_interpolation_menu_changed), &ui);
 
     //// Options
     ////// Output
