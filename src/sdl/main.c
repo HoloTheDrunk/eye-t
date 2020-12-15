@@ -12,6 +12,7 @@ typedef struct BannerMenu
 {
     GtkMenuBar *menu;
     GtkMenuItem *open;
+    GtkMenuItem *quit;
     GtkMenuItem *about;
 } BannerMenu;
 
@@ -78,7 +79,7 @@ void resize_to_fit(GtkImage *image, int size)
 {
     // Resize image to fit
     const GdkPixbuf *pb = gtk_image_get_pixbuf(image);
-    g_print("%s\n", (pb == NULL ? "NULL" : "NOT NULL"));
+    //g_print("%s\n", (pb == NULL ? "NULL" : "NOT NULL"));
     const int imgW = gdk_pixbuf_get_width(pb);
     const int imgH = gdk_pixbuf_get_height(pb);
 
@@ -292,6 +293,8 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     UNUSED(button);
     UserInterface *ui = user_data;
 
+    COUCOU(1);
+
     // Do the stuff ///////////////////////////////////////////////////////////
     //// Neural Network training
     Network net;
@@ -305,12 +308,15 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     //// Image pre-processing
     SDL_Surface *image_surface = load_image(ui->input_filename);
 
+    COUCOU(2);
     greyscale(image_surface);
     // convert_step(0, image_surface, ui);
 
+    COUCOU(3);
     image_surface = Otsu_method(image_surface, 0);
     // convert_step(1, image_surface, ui);
 
+    COUCOU(4);
     if(gtk_toggle_button_get_active(\
                 GTK_TOGGLE_BUTTON(ui->manual_rotation_toggle)))
         image_surface = SDL_RotationCentral(image_surface,\
@@ -319,6 +325,7 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
         image_surface = auto_rotate(image_surface);
     // convert_step(2, image_surface, ui);
 
+    COUCOU(5);
     image_surface = convolute(image_surface, gaussian_blur,\
             ARRAYLEN(gaussian_blur));
     // convert_step(3, image_surface, ui);
@@ -329,15 +336,22 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     //fill_edges(image_surface, 0, 255);
     // convert_step(5, image_surface, ui);
 
+    COUCOU(6);
     //// Segmentation
     BinTree* bin = Segmentation(image_surface);
 
+    COUCOU(7);
     Resize_Leaves(bin, 28, 28);
 
     //MatBT_Print(bin);
 
+    COUCOU(8);
     LeavesBound(bin , &net);
+
+    COUCOU(9);
     check(bin);
+
+    COUCOU(10);
     PrintTree(bin,1);
 
     gtk_text_buffer_set_text(ui->output_text, Reconstruction(bin, &net), -1);
@@ -436,6 +450,10 @@ int main()
         //resize_to_fit(processing_images[i], 132);
     }
 
+    // Quit
+    GtkMenuItem *quit =
+        GTK_MENU_ITEM(gtk_builder_get_object(builder, "quit"));
+
     UserInterface ui =
     {
         // Main top-level window
@@ -446,6 +464,7 @@ int main()
         {
             .menu = menu,
             .open = open,
+            .quit = quit,
             .about = about,
         },
 
@@ -477,6 +496,7 @@ int main()
     // Connects event handlers ////////////////////////////////////////////////
     //// Top-level window
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
 
     //// Top Menu
     g_signal_connect(open, "activate", G_CALLBACK(on_open_activate), &ui);
