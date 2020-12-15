@@ -18,6 +18,9 @@ typedef struct BannerMenu
 
 typedef struct UserInterface
 {
+    // Neural network
+    Network *net;
+
     // Main top-level window
     GtkWindow *window;
 
@@ -294,17 +297,7 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     UserInterface *ui = user_data;
 
     //COUCOU(1);
-
     // Do the stuff ///////////////////////////////////////////////////////////
-    //// Neural Network training
-    Network net;
-
-    InitNetwork(&net,784);
-    AddLayer(&net,100);
-    AddLayer(&net,127);
-
-    TrainNN(&net);
-
     //// Image pre-processing
     SDL_Surface *image_surface = load_image(ui->input_filename);
 
@@ -330,10 +323,10 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
             ARRAYLEN(gaussian_blur));
     // convert_step(3, image_surface, ui);
 
-    //image_surface = Otsu_method(image_surface, 0);
+    image_surface = Otsu_method(image_surface, 0);
     // convert_step(4, image_surface, ui);
 
-    //fill_edges(image_surface, 0, 255);
+    fill_edges(image_surface, 0, 255);
     // convert_step(5, image_surface, ui);
 
     //COUCOU(6);
@@ -346,15 +339,20 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     //MatBT_Print(bin);
 
     //COUCOU(8);
-    LeavesBound(bin , &net);
+    LeavesBound(bin , ui->net);
 
     //COUCOU(9);
     check(bin);
 
     //COUCOU(10);
-    PrintTree(bin,1);
+    //PrintTree(bin, 0);
 
-    gtk_text_buffer_set_text(ui->output_text, Reconstruction(bin, &net), -1);
+    // char *output = (char *)calloc(1024, sizeof(char));
+    // outputTree(bin, 0, output);
+    // gtk_text_buffer_set_text(ui->output_tree_text, output, -1);
+    // printf("%s", output);
+
+    gtk_text_buffer_set_text(ui->output_text, Reconstruction(bin, ui->net), -1);
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ui->save_output_toggle)))
     {
@@ -380,6 +378,15 @@ int main()
         g_clear_error(&error);
         return 1;
     }
+
+    // Neural Network and training
+    Network net;
+
+    InitNetwork(&net,784);
+    AddLayer(&net,100);
+    AddLayer(&net,127);
+
+    TrainNN(&net);
 
     // Main top-level window
     GtkWindow *window =
@@ -455,6 +462,8 @@ int main()
 
     UserInterface ui =
     {
+        .net = &net,
+
         // Main top-level window
         .window = window,
 

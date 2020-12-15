@@ -13,4 +13,6 @@ void LeavesBound(BinTree* bin, Network* net);
 
 void check(BinTree* bin);
 
+void outputTree(BinTree* curr, int depth, char *output);
+
 #endif

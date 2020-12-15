@@ -59,7 +59,6 @@ void TrainNN(Network *net)
 
 char* letter;
 
-
 char* GetCharNN(Network *net, Matrix* matrix)
 {
     int* matrix_letter = matrix_binlist(matrix);
@@ -70,7 +69,11 @@ char* GetCharNN(Network *net, Matrix* matrix)
 
     double *output = calloc(net->input_dim, sizeof(double));
     char tets = (char)Predict(net, imgMatrix, output);
+
     letter = &tets;
-    printf("The prediction is : %s\n", letter);
+
+    // Why the fuck does this dereference the pointer?
+    printf(" ");
+
     return letter;
 }

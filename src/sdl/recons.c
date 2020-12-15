@@ -31,7 +31,7 @@ void check(BinTree* bin)
 {
     if (bin == NULL)
         return;
-    printf("%s\n",bin->txt);
+    //printf("%s\n",bin->txt);
     check(bin->right);
     check(bin->right);
 }
@@ -52,7 +52,7 @@ char* Reconstruction(BinTree* bin, Network* net) // Pas ouf :(
 
 int rec_bis[4096];
 
-void printTree(BinTree* curr,int depth)
+void printTree(BinTree* curr, int depth)
 {
     char* nothing ="";
     int i;
@@ -77,27 +77,33 @@ void printTree(BinTree* curr,int depth)
     printTree(curr->right,depth+1);
 }
 
-// char *outputTree(BinTree* curr,int depth)
-// {
-//     char* nothing ="";
-//     int i;
-//     if(curr==NULL)return;
-//     printf("\t");
-//     for(i=0;i<depth;i++)
-//         if(i==depth-1)
-//             printf("%s───",rec_bis[depth-1]?"├":"└");
-//         else
-//             printf("%s   ",rec_bis[i]?"│":"  ");
-//     if (*curr->txt == '\n')
-//         printf("%s\n","\\n");
-//     else if (curr->txt == nothing)
-//         printf("%s\n","*");
-//     else if (*curr->txt == ' ')
-//         printf("%s\n","space");
-//     else
-//         printf("%s\n",curr->txt);
-//     rec_bis[depth]=1;
-//     printTree(curr->left,depth+1);
-//     rec_bis[depth]=0;
-//     printTree(curr->right,depth+1);
-// }
+void outputTree(BinTree* curr, int depth, char *output)
+{
+    char* nothing ="";
+    int i;
+
+    if(curr==NULL)
+        return;
+
+    //asprintf(&output, "%s\t", output);
+
+    for(i=0;i<depth;i++)
+        if(i==depth-1)
+            sprintf("%s%s───", output, rec_bis[depth-1]?"├":"└");
+        else
+            sprintf("%s%s   ", output, rec_bis[i]?"│":"  ");
+    if (*curr->txt == '\n')
+        sprintf("%s%s\n", output, "\\n");
+    else if (curr->txt == nothing)
+        sprintf("%s%s\n", output,  "*");
+    else if (*curr->txt == ' ')
+        sprintf("%s%s\n", output, "space");
+    else
+        sprintf("%s%s\n", output, curr->txt);
+
+    rec_bis[depth]=1;
+    outputTree(curr->left, depth+1, output);
+
+    rec_bis[depth]=0;
+    outputTree(curr->right, depth+1, output);
+}
