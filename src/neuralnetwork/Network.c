@@ -158,7 +158,7 @@ void Train(Network *network, double **inputlist, int *result, int nbImages)
                 trainingIsSufficient =! (result[j] == maxIndex);
             } while(trainingIsSufficient);
         }
-    } while (currAccuracy < 97);
+    } while (currAccuracy < 99);
 
 }
 
