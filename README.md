@@ -12,12 +12,13 @@ Optical character recognition software written in C by the EYE-T team.
 ## Build
 
 ```bash
+cd src/sdl/
 make
 ```
 
 ## Usage
 
 ```bash
-./eye-t
+./main
 ```
 
