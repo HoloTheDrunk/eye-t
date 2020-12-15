@@ -1,5 +1,6 @@
 #include "main.h"
 #include <gtk/gtk.h>
+#include "../neuralnetwork/NeuralNetwork.h"
 
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)
@@ -75,16 +76,11 @@ SDL_Surface* redImage(int w,int h,SDL_Surface* src)
 
 void resize_to_fit(GtkImage *image, int size)
 {
-    COUCOU(1);
     // Resize image to fit
-    const GdkPixbuf *pb =
-        gtk_image_get_pixbuf(image);
-    COUCOU(2);
+    const GdkPixbuf *pb = gtk_image_get_pixbuf(image);
     g_print("%s\n", (pb == NULL ? "NULL" : "NOT NULL"));
     const int imgW = gdk_pixbuf_get_width(pb);
-    COUCOU(3);
     const int imgH = gdk_pixbuf_get_height(pb);
-    COUCOU(4);
 
     double ratio;
     int destW;
@@ -282,6 +278,7 @@ void save_output(UserInterface *ui)
 
 void convert_step(int i, SDL_Surface *image_surface, UserInterface *ui)
 {
+    UNUSED(image_surface);
     char *filename;
     asprintf(&filename, "resources/steps/step_%i.png", i);
     // SAVE PNG IMAGE
@@ -295,13 +292,23 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
     UNUSED(button);
     UserInterface *ui = user_data;
 
-    // Do the stuff
+    // Do the stuff ///////////////////////////////////////////////////////////
+    //// Neural Network training
+    Network net;
+
+    InitNetwork(&net,784);
+    AddLayer(&net,100);
+    AddLayer(&net,127);
+
+    TrainNN(&net);
+
+    //// Image pre-processing
     SDL_Surface *image_surface = load_image(ui->input_filename);
 
     greyscale(image_surface);
     // convert_step(0, image_surface, ui);
 
-    image_surface = Otsu_method(image_surface, 255);
+    image_surface = Otsu_method(image_surface, 0);
     // convert_step(1, image_surface, ui);
 
     if(gtk_toggle_button_get_active(\
@@ -316,15 +323,24 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
             ARRAYLEN(gaussian_blur));
     // convert_step(3, image_surface, ui);
 
-    image_surface = Otsu_method(image_surface, 0);
+    //image_surface = Otsu_method(image_surface, 0);
     // convert_step(4, image_surface, ui);
-    COUCOU(1);
 
     //fill_edges(image_surface, 0, 255);
     // convert_step(5, image_surface, ui);
-    COUCOU(2);
 
-    // gtk_text_buffer_set_text(ui->output_text, [TEXT], -1);
+    //// Segmentation
+    BinTree* bin = Segmentation(image_surface);
+
+    Resize_Leaves(bin, 28, 28);
+
+    //MatBT_Print(bin);
+
+    LeavesBound(bin , &net);
+    check(bin);
+    PrintTree(bin,1);
+
+    gtk_text_buffer_set_text(ui->output_text, Reconstruction(bin, &net), -1);
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ui->save_output_toggle)))
     {

@@ -98,8 +98,10 @@ SDL_Surface* SDL_RotationCentral(SDL_Surface* origine, float angle)
         for(i=0;i<origine->w;i++)
         {
 
-            bx = (int) (cos(angle_radian) * (i-mx) + sin(angle_radian) * (j-my)) + mx;
-            by = (int) (-sin(angle_radian) * (i-mx) + cos(angle_radian) * (j-my)) + my;
+            bx = (int) (cos(angle_radian) * (i-mx) + \
+                    sin(angle_radian) * (j-my)) + mx;
+            by = (int) (-sin(angle_radian) * (i-mx) + \
+                    cos(angle_radian) * (j-my)) + my;
             if (bx>=0 && bx< origine->w && by>=0 && by< origine->h)
             {
                 couleur = SDL_LirePixel(origine, bx, by);

@@ -90,8 +90,7 @@ Matrix* ClearBounds(Matrix* matrix) // TESTED
     }
 
     Matrix* clearedmatrix =
-        CopyMatrix(matrix, LeftBound_x, RightBound_x,
-                UpperBound_y, LowerBound_y);
+        CopyMatrix(matrix, LeftBound_x, RightBound_x, UpperBound_y, LowerBound_y);
     return clearedmatrix;
 }
 
@@ -150,10 +149,8 @@ int SpaceValue(Matrix* matrix) // TESTED
         }
     }
     if (space_count ==  0)
-    {
         printf("SPACE VALUE\n");
-        return 0;
-    }
+    printf("SpaceValue : %i\n" ,((white_pixel_count / space_count) + 1));
     return (white_pixel_count / space_count) + 1;
 }
 
@@ -172,7 +169,7 @@ int IsWords(Matrix* matrix, int space_value) // TESTED
         }
         else
         {
-            if (before && count > space_value)
+            if (before && count > space_value*2)
                 return 0;
             else
             {
@@ -191,6 +188,7 @@ int FindVerPic(Matrix* matrix, int is_words)  // TESTED
     int x_index = 0;
     int width = matrix->width;
     int whitecolumn_found = 1;
+    printf("IS WORDS : %i\n", is_words);
     if (is_words != 0)
     {
         for (int i = 0; i < width; i++)
@@ -334,7 +332,9 @@ BinTree* SegmentationRec(BinTree* bintree)//17
 
     if (IsLine(matrix))
     {
+        printf("a\n");
         int space_value = SpaceValue(matrix);
+        printf("b\n");
         int is_words = IsWords(matrix, space_value);
 
         Matrix* leftmatrix = CutVerLeft(matrix,FindVerPic(matrix,is_words));
@@ -343,11 +343,11 @@ BinTree* SegmentationRec(BinTree* bintree)//17
 
         if (is_words)
         {
-            bintree->txt = " ";
+            bintree->txt = "";
         }
         else
         {
-            bintree->txt = "";
+            bintree->txt = " ";
         }
         bintree->left = NewBinTree(ClearBounds(leftmatrix));
         bintree->right = NewBinTree(ClearBounds(rightmatrix));
@@ -375,17 +375,18 @@ BinTree* Segmentation(SDL_Surface* image) //16
 {
     Matrix* matrix = Image_To_Matrix(image, image->w, image->h);
     BinTree* bintree = NewBinTree(matrix);
-
+    //PrintMatrix(matrix);
+    //BinTree* bintree = NewBinTree(matrix);
+    //MatBT_Print(bintree);
+    //return bintree;
     return SegmentationRec(bintree);
 
 }
 
+
+
 void  SegmentationTest(SDL_Surface* image)
 {
 
-    BinTree* bintree = Segmentation(image);
-    Resize_Leaves(bintree,28,28);
-    MatBT_Print(bintree);
-    //Matrix* Test = NewMatrix(10,10);
-    //PrintMatrix(ResizeMatrix(Test, 5 ,5));
+    MatBT_Print(Segmentation(image));
 }
