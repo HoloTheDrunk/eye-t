@@ -4,9 +4,14 @@
 SDL_Surface* auto_rotate(SDL_Surface* image)
 {
     SDL_Surface* neuf = image;
+    unsigned int initial = 0;
+
+    neuf = SDL_RotationCentralN(image, 0);
+    initial = Bounds_Detector(neuf, neuf->h, neuf->w).y -
+        Bounds_Detector(neuf,neuf->h,neuf->w).x;
 
     unsigned int first = 0;
-    neuf = SDL_RotationCentralN(image, 20);
+    neuf = SDL_RotationCentralN(image, 40);
     first =  Bounds_Detector(neuf, neuf->h, neuf->w).y -
         Bounds_Detector(neuf, neuf->h, neuf->w).x;
 
@@ -16,14 +21,15 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
     second =  Bounds_Detector(neuf, neuf->h, neuf->w).y -
         Bounds_Detector(neuf, neuf->h, neuf->w).x;
 
-
+    //printf("INIT : %i  FIRST : %i  SECOND : %i", initial, first, second);
+    if (first-initial < 60 )
+        return image;
     Uint8 clockwise = first < second;
-    printf("********************************************\n");
     clockwise = 1;
     neuf = image;
 
     int Current_Length = image->w;
-    printf("Max_Length : %i\n",first);
+    //printf("Max_Length : %i\n",first);
     int Previous_Length = image->w+1;
     int angle = 0;
     //int block = 1;
@@ -33,27 +39,27 @@ SDL_Surface* auto_rotate(SDL_Surface* image)
         if (clockwise)
         {
             angle ++;
-            printf("Angle : %i\n", angle);
+            //printf("Angle : %i\n", angle);
             neuf = SDL_RotationCentralN(image,angle);
             Tuple tuple =  Bounds_Detector(neuf, neuf->h, neuf->w);
             Current_Length =  tuple.y -  tuple.x;
-            display_image(neuf);
+            //display_image(neuf);
         }
         else
         {
-            printf("Here");
+            //printf("Here");
             angle--;
             neuf = SDL_RotationCentral(image,angle);
             Tuple tuple =  Bounds_Detector(neuf, neuf->h, neuf->w);
             Current_Length =  tuple.y -  tuple.x;
-            display_image(neuf);
+            //display_image(neuf);
         }
 
-        printf("Current_Length : %i, Min_Length : %i\n",
-                Current_Length, Previous_Length);
+        //printf("Current_Length : %i, Min_Length : %i\n",
+        //        Current_Length, Previous_Length);
     }
 
-    printf("\n %i",angle);
+    //printf("\n %i",angle);
     if (!clockwise)
         return SDL_RotationCentralN(image,angle);
     return SDL_RotationCentral(image,angle-1);
@@ -116,7 +122,7 @@ Tuple Bounds_Detector(SDL_Surface* image, unsigned height, unsigned width)
         put_pixel(image, right, y, rightPixel);
     }
 
-    printf("Left : %i  Right : %i\n", left,right);
+    //printf("Left : %i  Right : %i\n", left,right);
     Tuple tuple;
     tuple.x = left;
     tuple.y = right;

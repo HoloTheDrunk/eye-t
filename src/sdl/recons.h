@@ -4,7 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "types/binary_tree.h"
+#include "../neuralnetwork/NeuralNetwork.h"
 #include <string.h>
 
-char* Reconstruction(BinTree* bin);
+char* Reconstruction(BinTree* bin, Network* net);
+void LeavesBound(BinTree* bin, Network* net);
+
+
+void check(BinTree* bin);
+
 #endif

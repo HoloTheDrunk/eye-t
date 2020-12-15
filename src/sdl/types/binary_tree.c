@@ -6,7 +6,7 @@ BinTree* NewBinTree(Matrix * mat)
     MatBT->key = mat;
     MatBT->hor = 0;
     MatBT->vert = 0;
-    MatBT->txt = NULL;
+    MatBT->txt = (char*)calloc(3, sizeof(char));
     MatBT->right = NULL;
     MatBT->left = NULL;
     return MatBT;
@@ -42,7 +42,7 @@ void Resize_Leaves(BinTree* bin, int width, int height)
     if (bin->right == NULL && bin->left == NULL)
     {
         bin->key = ResizeMatrix(bin->key, width, height);
-        printf("Test \n");
+        //printf("Test \n");
     }
     else if (bin->right == NULL)
         Resize_Leaves(bin->left, width, height);
@@ -58,7 +58,7 @@ void Resize_Leaves(BinTree* bin, int width, int height)
 
 int rec[1000006];
 
-void PrintTree(BinTree* curr,int depth)
+void PrintTree(BinTree* curr, int depth)
 {
     char* nothing ="";
     int i;
@@ -66,9 +66,9 @@ void PrintTree(BinTree* curr,int depth)
     printf("\t");
     for(i=0;i<depth;i++)
         if(i==depth-1)
-                printf("%s───",rec[depth-1]?"├":"└");
+            printf("%s───",rec[depth-1]?"├":"└");
         else
-                printf("%s   ",rec[i]?"│":"  ");
+            printf("%s   ",rec[i]?"│":"  ");
     if (*curr->txt == '\n')
         printf("%s\n","\\n");
     else if (curr->txt == nothing)
@@ -82,5 +82,3 @@ void PrintTree(BinTree* curr,int depth)
     rec[depth]=0;
     PrintTree(curr->right,depth+1);
 }
-
-
