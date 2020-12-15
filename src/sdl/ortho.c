@@ -1,5 +1,15 @@
 #include "ortho.h"
+#include <ctype.h>
 
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#include "recons.h"
 
 float similarity(char* str1, char* str2,
         unsigned int len1, unsigned int len2)
@@ -83,8 +93,14 @@ char* changingWordL(char* word, char* filename)
     free(word_max);
 }
 
+char* toLower(char* s) {
+  for(char *p=s; *p; p++) *p=tolower(*p);
+  return s;
+}
+
 char* changingWordS(char* word, char* filename)
 {
+    word = toLower(word);
     int maxi = 0;
     int len1 = strlen(word);
     char* word_max = (char*)malloc (40);
@@ -149,28 +165,70 @@ int levenshtein(char *s1, char *s2) {
 
 void testTime(char* str1, char* filename)
 {
+    printf("\n");
     gettimeofday(&start, NULL);
     printf("Similarity algorithm computation time :\n");
-    printf("The nearest word of %s is %s \n", str1, changingWordS(str1,filename));
+    printf(YELLOW "The nearest word of %s is %s \n" RESET, str1, changingWordS(str1,filename));
     gettimeofday(&stop, NULL);
-    printf("The operation took %lu micro s\n\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
-
+    printf(GREEN "The operation took %lu micro s\n\n" RESET, (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
 
     gettimeofday(&start, NULL);
     printf("Levensthein algorithm computation time : \n");
-    printf("The nearest word of %s is %s \n", str1 ,changingWordL(str1,filename));
+    printf(YELLOW "The nearest word of %s is %s \n" RESET, str1 ,changingWordL(str1,filename));
     gettimeofday(&stop, NULL);
-    printf("The operation took %lu micro s\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
-
+    printf(RED"The operation took %lu micro s\n"RESET, (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
+    printf("\n");
 
 }
 
 
-
-
-int testOrtho()
+void ToSentence(char* sentence, FILE* fptr)
 {
-    testTime("victor", "../../../1-3000.txt");
+    char *str = malloc(sizeof(char)*(strlen(sentence)));
+    strcpy(str,sentence);
+    char * pch;
+    printf ("Splitting string \"%s\" into tokens:\n",str);
+    pch = strtok (str," ,.-");
+    while (pch != NULL)
+    {
+        pch = changingWordS(pch, "dict/1-3000.txt");
+        fprintf(fptr, "%s ",pch);
+        pch = strtok (NULL, " ,.-");
+    }
+}
+/*
+void ToSentence(char* sentence)
+{
+    char* result = malloc(sizeof(char)*10000);
+    char* index = sentence;
+    char* previous = sentence;
+    int len = 0;
+    while(*index != '\0')
+    {
+        if (*index == ' ')
+        {
+            //char* word = StrCpy(previous, len);
+            strncpy(result,previous,len);
+            printf("%s\n", result);
+            //printf("%s\n", changingWordL(word, "dict/1-3000.txt"));
+            //printf("%s",word);
+            //sprintf(result, "%s %s", result, changingWordS(word, "dict/1-3000.txt"));
+            index++;
+            previous = index;
+            len = 0;
+        }
+        else
+        {
+            len++;
+            index++;
+        }
+    }
+    printf("%s", result);
+}
+*/
+int testOrtho(char* str1)
+{
+    testTime(str1, "dict/1-3000.txt");
     //char* test = "testa taste ceci est encore un test";
     //char* word = "test";
     //char* word1 = "tets";
@@ -182,4 +240,3 @@ int testOrtho()
     //printf("Levensthein distance is %i", levenshtein(word,word1));
     return 0;
 }
-

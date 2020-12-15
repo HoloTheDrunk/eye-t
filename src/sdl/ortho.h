@@ -29,7 +29,7 @@ int levenshtein(char *s1, char *s2);
 // Returns the levenshtein distance between two giver words
 void testTime(char* str1, char* filename);
 // Test the two methods and gives the time of computation for each one
-int testOrtho();
+int testOrtho(char* str1);
 // Testing function
-
+void ToSentence(char* sentence, FILE* fptr);
 #endif
