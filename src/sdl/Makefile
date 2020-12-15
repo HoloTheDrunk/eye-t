@@ -20,7 +20,8 @@ clean:
 	${RM} main
 	${RM} ./types/*.o
 	${RM} ./types/*.d
-	${RM} xor
+	${RM} ../neuralnetwork/*.d
+	${RM} ../neuralnetwork/*.o
 
 # END
 
