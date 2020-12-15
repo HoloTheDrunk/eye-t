@@ -89,7 +89,7 @@ void Init(Layer *layer,int size,int newSize)
 {
 
     srand(time(NULL));
-    layer->weight = calloc((size * newSize), sizeof(double));
+    layer->weight = calloc(((unsigned long)size * newSize), sizeof(double));
     for(int i = 0; i < newSize;i++)
     {
         for(int j = 0; j < size; j++)
@@ -99,9 +99,9 @@ void Init(Layer *layer,int size,int newSize)
     }
     layer->size = size;
     layer->input_size = newSize;
-    layer->bias = calloc(size,sizeof(double));
-    layer->deltas = calloc(size,sizeof(double));
-    layer->out = calloc(size,sizeof(double));
+    layer->bias = calloc((unsigned long)size,sizeof(double));
+    layer->deltas = calloc((unsigned long)size,sizeof(double));
+    layer->out = calloc((unsigned long)size,sizeof(double));
     for(int i = 0; i < size; i++)
         layer->bias[i] = (rand() / (double)RAND_MAX) * (-2) + 1;
 }
