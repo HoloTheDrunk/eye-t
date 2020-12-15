@@ -37,7 +37,7 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
         w1 += histo[t];
         if (w1 == 0)
             continue;
-        if (w1 > nbrPixel)
+        if (w1 >= nbrPixel)
             break;
         w2 = nbrPixel - w1;
 
@@ -53,7 +53,7 @@ Uint8 Threshold_value(SDL_Surface* image, int width, int height)
             threshold = t;
             if(valence > var_max)
                 //threshold2 = t;
-            var_max = valence;
+                var_max = valence;
         }
     }
     return threshold;
@@ -80,9 +80,9 @@ SDL_Surface* Applying_Threshold(SDL_Surface* image, Uint8 threshold
             }
             else
             {
-                 Uint32 pixel1 = get_pixel(image, i, j);
-                 pixel1 = SDL_MapRGB(output->format, red, 0, 0);
-                 put_pixel(output, i, j, pixel1);
+                Uint32 pixel1 = get_pixel(image, i, j);
+                pixel1 = SDL_MapRGB(output->format, red, 0, 0);
+                put_pixel(output, i, j, pixel1);
             }
         }
     }
