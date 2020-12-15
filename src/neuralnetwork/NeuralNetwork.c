@@ -7,9 +7,14 @@
 #include "sdl_func.h"
 #include "surface_binlist.h"
 #include "../sdl/pixel_operations.h"
+#include "../sdl/types/matrix.h"
 
-
+#define MAX_LINE_LENGTH 28
 #define nbImages 62
+
+Matrix* ReadFileMatrix(char* filename);
+void PrintNatMatrix(int* m);
+void PrintNatDoubleMatrix(double *m);
 
 int res[] = {(int)'0', (int)'1', (int)'2', (int)'3', (int)'4', (int)'5',\
     (int)'6', (int)'7', (int)'8', (int)'9',\
@@ -25,6 +30,60 @@ int res[] = {(int)'0', (int)'1', (int)'2', (int)'3', (int)'4', (int)'5',\
         (int)'y', (int)'z'};
 
 
+Matrix* ReadFileMatrix(char* filename)
+{
+    Matrix* result = NewMatrix(28,28);
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        perror(filename);
+        errx(1, "The training file wasn't find !");
+    }
+    char line[MAX_LINE_LENGTH+2] = {0};
+    int j = 0;
+    while (fgets(line, MAX_LINE_LENGTH+2, file) && j < MAX_LINE_LENGTH-1)
+    {
+        int i = 0;
+        int index = 0;
+        while (line[index] != '\0' && i < MAX_LINE_LENGTH)
+        {
+            SetElement(result, i, j, line[i]-'0');
+            i++;
+            index++;
+
+        }
+        j++;
+    }
+    if (fclose(file))
+        perror(filename);
+
+    return result;
+}
+
+
+void PrintNatDoubleMatrix(double* m)
+{
+    for(int x = 0; x < 28; x++) {
+        printf("%s", "\n");
+        for(int y = 0; y < 28; y++) {
+            printf("%lf", m[y * 28 + x]);
+        }
+    }
+    printf("\n");
+}
+
+
+void PrintNatMatrix(int* m)
+{
+    for(int x = 0; x < 28; x++) {
+        printf("%s", "\n");
+        for(int y = 0; y < 28; y++) {
+            printf("%i", m[y * 28 + x]);
+        }
+    }
+    printf("\n");
+}
+
 void InitNN(Network *network)
 {
     InitNetwork(network,784);
@@ -39,16 +98,15 @@ void TrainNN(Network *net)
     init_sdl();
     for(int i = 0; i < 62; i++)
     {
-        char name[50]="../neuralnetwork/set/";
+        char name[50]="../neuralnetwork/set/ASCII";
         char ch[10];
-        sprintf(ch, "%d", res[i]);
+        sprintf(ch, "/%d", res[i]);
         strcat(name, ch);
-        strcat(name,"/0.jpg");
+		strcat(name, ".txt");
 
-        SDL_Surface* image_surface = load_image(name);
-        int *image1 = surface_binlist(image_surface);
+		Matrix *mat = ReadFileMatrix(name);
+		int *image1 = matrix_binlist(mat);
         double *image2 = malloc(784*sizeof(double));
-
         for(int j = 0; j < 784; j++)
             image2[j] = image1[j];
         inputList[i] = image2;

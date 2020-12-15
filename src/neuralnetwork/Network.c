@@ -152,14 +152,12 @@ void Train(Network *network, double **inputlist, int *result, int nbImages)
 										  sumWeightsDeltas;
                     }
                 }
-
                 double *out2 = calloc(inputDim, sizeof(double));
                 maxIndex = Predict(network, inputlist[j], out2);
                 trainingIsSufficient =! (result[j] == maxIndex);
             } while(trainingIsSufficient);
         }
     } while (currAccuracy < 97);
-
 }
 
 
