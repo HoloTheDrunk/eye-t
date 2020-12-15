@@ -196,6 +196,7 @@ void ToSentence(char* sentence, FILE* fptr)
         pch = strtok (NULL, " ,.-");
     }
 }
+//
 /*
 void ToSentence(char* sentence)
 {
