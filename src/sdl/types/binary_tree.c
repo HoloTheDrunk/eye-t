@@ -6,7 +6,7 @@ BinTree* NewBinTree(Matrix * mat)
     MatBT->key = mat;
     MatBT->hor = 0;
     MatBT->vert = 0;
-    MatBT->txt = NULL;
+    MatBT->txt = '.';
     MatBT->right = NULL;
     MatBT->left = NULL;
     return MatBT;
@@ -17,8 +17,6 @@ void Free_MatBT(BinTree* MatBT)
 {
     if (MatBT)
     {
-        if (MatBT->txt)
-            free(MatBT->txt);
         Free_MatBT(MatBT->right);
         Free_MatBT(MatBT->left);
     }
@@ -60,7 +58,6 @@ int rec[1000006];
 
 void PrintTree(BinTree* curr,int depth)
 {
-    char* nothing ="";
     int i;
     if(curr==NULL)return;
     printf("\t");
@@ -69,14 +66,14 @@ void PrintTree(BinTree* curr,int depth)
                 printf("%s───",rec[depth-1]?"├":"└");
         else
                 printf("%s   ",rec[i]?"│":"  ");
-    if (*curr->txt == '\n')
+    if (curr->txt == '\n')
         printf("%s\n","\\n");
-    else if (curr->txt == nothing)
+    else if (curr->txt == '.')
         printf("%s\n","*");
-    else if (*curr->txt == ' ')
+    else if (curr->txt == ' ')
         printf("%s\n","space");
     else
-        printf("%s\n",curr->txt);
+        printf("%c\n",curr->txt);
     rec[depth]=1;
     PrintTree(curr->left,depth+1);
     rec[depth]=0;

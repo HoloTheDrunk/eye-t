@@ -6,5 +6,7 @@
 #include "types/binary_tree.h"
 #include <string.h>
 
-char* Reconstruction(BinTree* bin);
+char* Reconstruction(BinTree* bin, char* finale);
+void LeavesToChar(BinTree* bintree, Network *net);
+
 #endif

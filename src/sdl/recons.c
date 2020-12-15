@@ -1,4 +1,6 @@
 #include "recons.h"
+#include <stdio.h>
+#include "../neuralnetwork/NeuralNetwork.c"
 
 char *mystrcat(char *a, char *b) {
   char *p, *q, *rtn;
@@ -8,15 +10,32 @@ char *mystrcat(char *a, char *b) {
   return rtn;
 }
 
-
-char* Reconstruction(BinTree* bin) // Pas ouf :(
+void LeavesToChar(BinTree* bintree, Network *net)
+{
+    if (bintree->left == NULL)
+    {
+        bintree->txt = GetCharNN(net, bintree->key);
+    }
+    else
+    {
+        LeavesToChar(bintree->left, net);
+        LeavesToChar(bintree->right, net);
+    }
+}
+char* Reconstruction(BinTree* bin, char* final) // Pas ouf :(
 {
     if (bin->left != NULL)
     {
-        return mystrcat(mystrcat(Reconstruction(bin->left), bin->txt)
-                ,Reconstruction(bin->right));
+        if (asprintf(&final, "%s",\
+                mystrcat( \
+                mystrcat( \
+                    Reconstruction(bin->left, final), &bin->txt) \
+                    ,Reconstruction(bin->right, final) \
+                    )))
+            printf("uuu");
+        return final;
     }
-    return bin->txt;
+    return &bin->txt;
 }
 
 
@@ -24,7 +43,6 @@ int rec[1000006];
 
 void printTree(BinTree* curr,int depth)
 {
-    char* nothing ="";
     int i;
     if(curr==NULL)return;
     printf("\t");
@@ -33,14 +51,14 @@ void printTree(BinTree* curr,int depth)
                 printf("%s───",rec[depth-1]?"├":"└");
         else
                 printf("%s   ",rec[i]?"│":"  ");
-    if (*curr->txt == '\n')
+    if (curr->txt == '\n')
         printf("%s\n","\\n");
-    else if (curr->txt == nothing)
+    else if (curr->txt == '.')
         printf("%s\n","*");
-    else if (*curr->txt == ' ')
+    else if (curr->txt == ' ')
         printf("%s\n","space");
     else
-        printf("%s\n",curr->txt);
+        printf("%c\n",curr->txt);
     rec[depth]=1;
     printTree(curr->left,depth+1);
     rec[depth]=0;

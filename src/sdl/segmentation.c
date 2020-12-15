@@ -343,11 +343,11 @@ BinTree* SegmentationRec(BinTree* bintree)//17
 
         if (is_words)
         {
-            bintree->txt = " ";
+            bintree->txt = ' ';
         }
         else
         {
-            bintree->txt = "";
+            bintree->txt = '.';
         }
         bintree->left = NewBinTree(ClearBounds(leftmatrix));
         bintree->right = NewBinTree(ClearBounds(rightmatrix));
@@ -359,7 +359,7 @@ BinTree* SegmentationRec(BinTree* bintree)//17
     }
     else
     {
-        bintree->txt = "\n";
+        bintree->txt = '\n';
         Matrix* uppermatrix = CutHorUpper(matrix,FindHorPic(matrix));
         Matrix* lowermatrix = CutHorLower(matrix,FindHorPic(matrix));
         bintree->left = NewBinTree(ClearBounds(uppermatrix));

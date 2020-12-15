@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <SDL.h>
-#include "layer.h"
-#include "Network.h"
-#include "sdl_func.h"
-#include "surface_binlist.h"
-#include "../sdl/pixel_operations.h"
-
+#include "NeuralNetwork.h"
 
 #define nbImages 62
 
@@ -32,6 +23,8 @@ void InitNN(Network *network)
     AddLayer(network,127);
 }
 
+// sdl/main
+//     L_ TrainNN(filename = "../neuralnetwork/set/") (sdl)
 
 void TrainNN(Network *net)
 {
@@ -39,7 +32,7 @@ void TrainNN(Network *net)
     init_sdl();
     for(int i = 0; i < 62; i++)
     {
-        char name[50]="set/";
+        char name[50]="../neuralnetwork/set/";
         char ch[10];
         sprintf(ch, "%d", res[i]);
         strcat(name, ch);
@@ -73,7 +66,7 @@ char GetCharNN(Network *net, Matrix* matrix)
     return letter;
 }
 
-
+/*
 int main()
 {
     Network net;
@@ -97,3 +90,4 @@ int main()
     freeall(&net);
     return 0;
 }
+*/

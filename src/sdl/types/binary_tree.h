@@ -14,10 +14,11 @@ typedef struct _BinTree
     int empty;
     int hor;
     int vert;
-    char *txt;
+    char txt;
     struct _BinTree *left;
     struct _BinTree *right;
 }BinTree;
+
 // TreeB->left = NewBinTree(Left1);
 BinTree* NewBinTree(Matrix * mat);
 // Create a new bintree with a matrix as key, the matrix should

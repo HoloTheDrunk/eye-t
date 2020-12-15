@@ -12,7 +12,7 @@
 #include "flood_fill.h"
 #include "string_comparison.c"
 #include "recons.h"
-
+#include "../neuralnetwork/NeuralNetwork.h"
 #include <unistd.h>
 #include <time.h>
 
