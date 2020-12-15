@@ -1,6 +1,7 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
+#include "savesurf.h"
 #include "image_load.h"
 #include "convolution_matrix.h"
 #include "otsu.h"
@@ -12,10 +13,13 @@
 #include "flood_fill.h"
 #include "string_comparison.c"
 #include "recons.h"
+#include "../neuralnetwork/NeuralNetwork.h"
 
 #include <unistd.h>
 #include <time.h>
 #include <libgen.h>
+#include <gtk/gtk.h>
+#include <stdbool.h>
 
 #define ARRAYLEN(x) sizeof(x)/sizeof(x[0])
 

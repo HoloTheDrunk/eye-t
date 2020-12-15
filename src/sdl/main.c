@@ -1,6 +1,8 @@
 #include "main.h"
-#include <gtk/gtk.h>
-#include "../neuralnetwork/NeuralNetwork.h"
+
+#define try bool __HadError=false;
+#define catch(x) ExitJmp:if(__HadError)
+#define throw(x) __HadError=true;goto ExitJmp;
 
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)
@@ -318,48 +320,65 @@ void save_output(UserInterface *ui)
 
 void convert_step(int i, SDL_Surface *image_surface, UserInterface *ui)
 {
-    UNUSED(image_surface);
     char *filename;
     asprintf(&filename, "resources/steps/step_%i.png", i);
     // SAVE PNG IMAGE
     // save_image(image_surface, filename);
-    gtk_image_set_from_file(ui->processing_images[i], filename);
-    resize_to_fit(ui, ui->processing_images[i], 132);
+    png_save_surface(filename, image_surface);
+    open_file(ui, filename, ui->processing_images[i], 132);
 }
 
 void on_output_button_clicked(GtkButton *button, gpointer user_data)
 {
+    //int passed = 0;
     UNUSED(button);
     UserInterface *ui = user_data;
 
+    //COUCOU(passed);
+    //passed++;
     // Do the stuff ///////////////////////////////////////////////////////////
     //// Image pre-processing
     SDL_Surface *image_surface = load_image(ui->input_filename);
 
+    //COUCOU(passed);
+    //passed++;
     greyscale(image_surface);
-    // convert_step(0, image_surface, ui);
+    convert_step(0, image_surface, ui);
 
+    //COUCOU(passed);
+    //passed++;
     image_surface = Otsu_method(image_surface, 0);
-    // convert_step(1, image_surface, ui);
+    convert_step(1, image_surface, ui);
 
+    //COUCOU(passed);
+    //passed++;
     if(gtk_toggle_button_get_active(\
                 GTK_TOGGLE_BUTTON(ui->manual_rotation_toggle)))
         image_surface = SDL_RotationCentral(image_surface,\
                 gtk_spin_button_get_value(ui->manual_rotation_amount));
     else
         image_surface = auto_rotate(image_surface);
-    // convert_step(2, image_surface, ui);
+    convert_step(2, image_surface, ui);
 
+    //COUCOU(passed);
+    //passed++;
     image_surface = convolute(image_surface, gaussian_blur,\
             ARRAYLEN(gaussian_blur));
-    // convert_step(3, image_surface, ui);
+    convert_step(3, image_surface, ui);
 
+    //COUCOU(passed);
+    //passed++;
     image_surface = Otsu_method(image_surface, 0);
-    // convert_step(4, image_surface, ui);
+    convert_step(4, image_surface, ui);
 
-    fill_edges(image_surface, 255, 0);
-    // convert_step(5, image_surface, ui);
+    //COUCOU(passed);
+    //passed++;
 
+    fill_edges(image_surface, 0, 255);
+    convert_step(5, image_surface, ui);
+
+    //COUCOU(passed);
+    //passed++;
     //// Segmentation
     BinTree* bin = Segmentation(image_surface);
 
@@ -373,11 +392,35 @@ void on_output_button_clicked(GtkButton *button, gpointer user_data)
 
     //PrintTree(bin, 0);
 
-    // char *output = (char *)calloc(1024, sizeof(char));
-    // outputTree(bin, 0, output);
-    // gtk_text_buffer_set_text(ui->output_tree_text, output, -1);
-    // printf("%s", output);
+    // Clear buffer
+    GtkTextIter start, end;
+    gtk_text_buffer_get_start_iter(ui->output_tree_text, &start);
+    gtk_text_buffer_get_end_iter(ui->output_tree_text, &end);
+    gtk_text_buffer_delete(ui->output_tree_text, &start, &end);
 
+    // Clear tree file
+    FILE *fclear = fopen("resources/seg_bin_tree", "w+");
+    fclose(fclear);
+
+    // Open and fill file
+    FILE *fptr = fopen("resources/seg_bin_tree", "a");
+    outputTree(bin, 0, fptr);
+    fclose(fptr);
+
+    // Write file to buffer
+    FILE *fread = fopen("resources/seg_bin_tree", "r");
+    GtkTextIter iter;
+    gtk_text_buffer_get_iter_at_offset(ui->output_tree_text, &iter, 0);
+    gchar c = ' ';
+    while((c=fgetc(fread))!=EOF)
+    {
+        gtk_text_buffer_insert(ui->output_tree_text, &iter, &c, 1);
+        gtk_text_iter_forward_char(&iter);
+    }
+    fclose(fread);
+
+    //COUCOU(passed);
+    //passed++;
     gtk_text_buffer_set_text(ui->output_text, Reconstruction(bin, ui->net), -1);
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ui->save_output_toggle)))

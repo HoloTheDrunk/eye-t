@@ -5,7 +5,6 @@ void flood_fill(SDL_Surface *surface, int x, int y, int oldcolor, int newcolor)
 {
     if(get_rgb(surface, x, y)[0] == oldcolor)
     {
-        
         put_pixel(surface, x, y, SDL_MapRGB(surface->format, 
                     newcolor, newcolor, newcolor));
         if(x < surface->w - 1)

@@ -37,7 +37,7 @@ int png_save_surface(char *filename, SDL_Surface *surf)
     // Opening output file */
     fp = fopen(filename, "wb");
     if (fp == NULL) {
-        perror("fopen error");
+        errx(-1, "fopen error");
         return -1;
     }
 
@@ -45,14 +45,14 @@ int png_save_surface(char *filename, SDL_Surface *surf)
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
             NULL, png_user_error, png_user_warn);
     if (png_ptr == NULL) {
-        printf("png_create_write_struct error!\n");
+        errx(-1, "png_create_write_struct error!\n");
         return -1;
     }
 
     info_ptr = png_create_info_struct(png_ptr);
     if (info_ptr == NULL) {
         png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-        printf("png_create_info_struct error!\n");
+        errx(-1, "png_create_info_struct error!\n");
         exit(-1);
     }
 
@@ -90,60 +90,60 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 
 
 /*
-int main(int argc, char **argv)
-{
-    SDL_Surface *input_surf;
-    char *input, *output, *str_ptr;
-    int namelen;
+   int main(int argc, char **argv)
+   {
+   SDL_Surface *input_surf;
+   char *input, *output, *str_ptr;
+   int namelen;
 
 
-    //Parsing shell parameters
-    if (argc == 3) {
-        input = argv[1];
-        output = argv[2];
-    }
-    else if (argc == 2) {
-        input = argv[1];
-        str_ptr = strstr(argv[1], ".");
-        if (str_ptr == NULL)
-            namelen = strlen(argv[1]);
-        else
-            namelen = str_ptr - argv[1];
-        output = (char *)malloc(namelen + 5);
-        strncpy(output, argv[1], namelen);
-        strcat(output, ".png");
-    }
-    else {
-        printf("The correct syntax is: %s input [output]\n", argv[0]);
-        exit(-1);
-    }
+//Parsing shell parameters
+if (argc == 3) {
+input = argv[1];
+output = argv[2];
+}
+else if (argc == 2) {
+input = argv[1];
+str_ptr = strstr(argv[1], ".");
+if (str_ptr == NULL)
+namelen = strlen(argv[1]);
+else
+namelen = str_ptr - argv[1];
+output = (char *)malloc(namelen + 5);
+strncpy(output, argv[1], namelen);
+strcat(output, ".png");
+}
+else {
+printf("The correct syntax is: %s input [output]\n", argv[0]);
+exit(-1);
+}
 
-    // Initializing video subsystem
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL_Init error: %s\n", SDL_GetError());
-        exit (-1);
-    }
+// Initializing video subsystem
+if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+printf("SDL_Init error: %s\n", SDL_GetError());
+exit (-1);
+}
 
-    // Calling SDL_Quit at exit
-    atexit(SDL_Quit);
+// Calling SDL_Quit at exit
+atexit(SDL_Quit);
 
-    printf("input file: %s\n", input);
-    printf("output file: %s\n", output);
+printf("input file: %s\n", input);
+printf("output file: %s\n", output);
 
-    //Opening input and output files
-    input_surf = IMG_Load(input);
-    if (input_surf == NULL) {
-        printf("IMG_Load error: %s\n", IMG_GetError());
-        exit(-1);
-    }
+//Opening input and output files
+input_surf = IMG_Load(input);
+if (input_surf == NULL) {
+printf("IMG_Load error: %s\n", IMG_GetError());
+exit(-1);
+}
 
-    if(png_save_surface(output, input_surf) < 0)
-        exit(-1);
+if(png_save_surface(output, input_surf) < 0)
+exit(-1);
 
-    //Quitting
-    if (argc == 2)
-        free(output);
-    SDL_Quit();
+//Quitting
+if (argc == 2)
+free(output);
+SDL_Quit();
 
-    return 0;
+return 0;
 }*/

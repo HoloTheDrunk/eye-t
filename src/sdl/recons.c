@@ -77,33 +77,28 @@ void printTree(BinTree* curr, int depth)
     printTree(curr->right,depth+1);
 }
 
-void outputTree(BinTree* curr, int depth, char *output)
+void outputTree(BinTree* curr, int depth, FILE *fptr)
 {
     char* nothing ="";
     int i;
-
-    if(curr==NULL)
-        return;
-
-    //asprintf(&output, "%s\t", output);
-
+    if(curr==NULL)return;
+    //fprintf(fptr, "\t");
     for(i=0;i<depth;i++)
         if(i==depth-1)
-            sprintf("%s%s───", output, rec_bis[depth-1]?"├":"└");
+            fprintf(fptr, "%s___", rec_bis[depth-1] ? "L" : "\\");
         else
-            sprintf("%s%s   ", output, rec_bis[i]?"│":"  ");
+            fprintf(fptr, "%s   ", rec_bis[i] ? "|" : "  ");
     if (*curr->txt == '\n')
-        sprintf("%s%s\n", output, "\\n");
+        fprintf(fptr, "\\n\n");
     else if (curr->txt == nothing)
-        sprintf("%s%s\n", output,  "*");
+        fprintf(fptr, "*\n");
     else if (*curr->txt == ' ')
-        sprintf("%s%s\n", output, "space");
+        fprintf(fptr, "space\n");
     else
-        sprintf("%s%s\n", output, curr->txt);
-
+        fprintf(fptr, "%s\n",curr->txt);
     rec_bis[depth]=1;
-    outputTree(curr->left, depth+1, output);
-
+    outputTree(curr->left, depth+1, fptr);
     rec_bis[depth]=0;
-    outputTree(curr->right, depth+1, output);
+    outputTree(curr->right, depth+1, fptr);
+
 }
