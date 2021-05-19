@@ -17,7 +17,6 @@ clean:
 	${RM} *.d
 	${RM} types/*.o
 	${RM} types/*.d
-	${RM} main
 	${RM} ./types/*.o
 	${RM} ./types/*.d
 	${RM} ../neuralnetwork/*.d
